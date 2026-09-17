@@ -129,6 +129,22 @@ jobs:
         run: |
           pytest spikes/test_sprint0_suite.py -v
 
+      - name: Install Static Analysis Tooling
+        run: |
+          pip install ruff bandit pip-audit
+
+      - name: Execute Code Quality Analysis (Ruff)
+        run: |
+          ruff check .
+
+      - name: Execute Security Static Analysis (Bandit)
+        run: |
+          bandit -r app/
+
+      - name: Execute Dependency Vulnerability Audit (pip-audit)
+        run: |
+          pip-audit -r requirements.txt
+
       - name: Diagnostic Output on Failure
         if: failure()
         run: |

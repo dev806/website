@@ -8,8 +8,6 @@ Enforces:
 3. 24-business-hour SLA target commitment.
 """
 
-from typing import Optional
-import uuid
 from sqlalchemy.orm import Session
 
 from app.database.models import DiscoverySession, ReviewRequest

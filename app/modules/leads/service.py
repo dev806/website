@@ -8,8 +8,6 @@ Manages:
 3. Elevating anonymous discovery sessions (is_unlocked = True).
 """
 
-from typing import Optional
-import uuid
 from sqlalchemy.orm import Session
 
 from app.database.models import DiscoverySession, Lead, LeadConsent

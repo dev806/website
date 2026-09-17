@@ -25,13 +25,9 @@ from sqlalchemy.orm import Session
 
 from app.config import get_settings
 from app.database.models import (
-    BlueprintSection,
     DiscoverySession,
-    Estimate,
-    Opportunity,
     ProblemStatement,
     ReviewRequest,
-    SolutionBlueprint,
     StructuredContext,
 )
 from app.database.session import get_db

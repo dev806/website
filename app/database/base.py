@@ -5,8 +5,7 @@ Conforms to DOC-ARCH-005 and DOC-ARCH-006 for Microsoft SQL Server 2022 Express.
 
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import DateTime
-from sqlalchemy.dialects.mssql import DATETIME2, UNIQUEIDENTIFIER
+from sqlalchemy.dialects.mssql import DATETIME2
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 

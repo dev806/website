@@ -11,8 +11,7 @@ Enforces:
 import hashlib
 import hmac
 from typing import Optional
-import uuid
-from fastapi import Cookie, Depends, Header, Request
+from fastapi import Depends, Request
 from sqlalchemy.orm import Session
 
 from app.config import Settings, get_settings
@@ -56,14 +55,15 @@ def extract_raw_token(
     request: Request,
     session_cookie: Optional[str] = None,
     x_session_id: Optional[str] = None,
-    secret_key: str = "",
+    secret_key: Optional[str] = None,
 ) -> Optional[str]:
     """
     Extracts raw session token from signed cookie or testing header.
     """
+    key = secret_key or ""
     # 1. Check HTTP-only cookie first
     if session_cookie:
-        verified = verify_signed_token(session_cookie, secret_key)
+        verified = verify_signed_token(session_cookie, key)
         if verified:
             return verified
 
@@ -72,7 +72,7 @@ def extract_raw_token(
     if header_token:
         # If signed header, verify it
         if "." in header_token:
-            verified = verify_signed_token(header_token, secret_key)
+            verified = verify_signed_token(header_token, key)
             if verified:
                 return verified
         # Else treat as direct raw token (useful in tests)

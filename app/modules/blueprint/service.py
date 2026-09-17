@@ -8,8 +8,6 @@ Enforces:
 3. Idempotent re-synthesis on backtracking.
 """
 
-from typing import Optional
-import uuid
 from sqlalchemy.orm import Session
 
 from app.database.models import (

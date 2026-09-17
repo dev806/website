@@ -5,8 +5,10 @@ dynamic capability pillar rendering, and unified legal/trust documentation.
 Conforms strictly to Phase 5.4 specifications and project governance.
 """
 
+import json
 import re
-from typing import Any, Dict, Optional
+from typing import Any, Dict
+import urllib.parse
 from fastapi import APIRouter, HTTPException, Request, Response, status
 from fastapi.responses import HTMLResponse, PlainTextResponse
 
@@ -211,9 +213,6 @@ async def contact_get_view(request: Request) -> HTMLResponse:
         },
     )
 
-
-import json
-import urllib.parse
 
 
 async def _parse_form_data(request: Request) -> Dict[str, Any]:

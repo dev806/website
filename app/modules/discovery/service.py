@@ -15,7 +15,6 @@ import uuid
 from sqlalchemy.orm import Session
 
 from app.ai_gateway.gateway import AIServiceGateway
-from app.ai_gateway.schemas import ClarificationQuestionsDTO, QuestionItemDTO
 from app.config import Settings, get_settings
 from app.database.models import (
     BlueprintSection,
@@ -30,7 +29,6 @@ from app.modules.blueprint.service import BlueprintService
 from app.modules.discovery.schemas import (
     BlueprintData,
     BlueprintSectionDisplayDTO,
-    EstimateDisplayDTO,
     LeadUnlockData,
     LeadUnlockRequest,
     OpportunityMapData,

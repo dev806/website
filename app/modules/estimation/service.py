@@ -12,8 +12,6 @@ Enforces:
 from decimal import Decimal
 import json
 import math
-from typing import Optional
-import uuid
 from sqlalchemy.orm import Session
 
 from app.database.models import (

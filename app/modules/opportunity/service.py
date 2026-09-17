@@ -15,7 +15,7 @@ import uuid
 from sqlalchemy.orm import Session
 
 from app.ai_gateway.gateway import AIServiceGateway
-from app.ai_gateway.schemas import OpportunityItemDTO, OpportunityMapDTO
+from app.ai_gateway.schemas import OpportunityItemDTO
 from app.database.models import Opportunity
 from app.shared.logging import get_logger
 
