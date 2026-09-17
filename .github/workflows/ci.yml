@@ -109,6 +109,7 @@ jobs:
 
       - name: Execute Main Application Test Suite (85 Tests)
         env:
+          PYTHONPATH: .
           APP_ENV: testing
           DATABASE_URL: "mssql+pyodbc://sa:YourStrong!Password123@127.0.0.1:1433/StudioWebsiteTest?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
           DATABASE_URL_DEV: "mssql+pyodbc://sa:YourStrong!Password123@127.0.0.1:1433/StudioWebsiteDev?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
@@ -119,6 +120,7 @@ jobs:
 
       - name: Execute Sprint 0 Baseline Regression Suite (7 Tests)
         env:
+          PYTHONPATH: .
           APP_ENV: testing
           DATABASE_URL: "mssql+pyodbc://sa:YourStrong!Password123@127.0.0.1:1433/StudioWebsiteTest?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
           DATABASE_URL_DEV: "mssql+pyodbc://sa:YourStrong!Password123@127.0.0.1:1433/StudioWebsiteDev?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
