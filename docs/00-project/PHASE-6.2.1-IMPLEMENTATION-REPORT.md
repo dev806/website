@@ -300,36 +300,54 @@ Prior to repository staging, the workspace was audited for sensitive files, cred
 
 ### 13.3 CI Execution Status Matrix
 
-| Dimension | Target CI Specification | Execution / Tracking Status |
+| Dimension | Target CI Specification | Actual Remote Run Status (`run 35255994413`) |
 | :--- | :--- | :--- |
-| **GitHub Repository** | `https://github.com/dev806/website.git` | Configured as `origin` |
-| **Branch** | `main` | Initialized and committed (`cfb1c5e`) |
-| **Commit SHA** | `cfb1c5e` | Recorded locally; awaiting push |
-| **GitHub Actions Workflow** | `.github/workflows/ci.yml` | Committed in repository root |
-| **Runner** | `ubuntu-latest` | Pending live remote run |
-| **Python Version** | 3.13 | Pending live remote run |
-| **SQL Server Image** | `mcr.microsoft.com/mssql/server:2022-latest` | Pending live remote run |
-| **ODBC Driver** | `msodbcsql18` | Pending live remote run |
-| **Readiness Result** | Deterministic `pyodbc` connection probe | Pending live remote run |
-| **Database Provisioning** | `StudioWebsiteDev` & `StudioWebsiteTest` | Pending live remote run |
-| **Alembic Revision** | `4941998763bd` | Pending live remote run |
-| **Application Test Result** | 85 collected / 85 passed expected | Pending live remote run |
-| **Sprint 0 Result** | 7 collected / 7 passed expected | Pending live remote run |
-| **Workflow Exit Status** | Success | **PENDING LIVE EXECUTION (AUTH REQUIRED)** |
+| **GitHub Repository** | `https://github.com/dev806/website.git` | `dev806/website` |
+| **Branch** | `main` | `main` |
+| **Commit SHA** | `f0e0721e3af11eaeefa3d1f736afc6501ca5f6ba` | `f0e0721e3af11eaeefa3d1f736afc6501ca5f6ba` |
+| **GitHub Actions Workflow** | `.github/workflows/ci.yml` | `CI Quality & Security Pipeline` |
+| **Run Identifier** | Remote execution on push | Run ID: `35255994413` / Job ID: `105319670768` |
+| **Runner** | `ubuntu-latest` | `ubuntu-24.04.5 LTS` (Image: `20260907.300.1`) |
+| **Python Version** | 3.13 | CPython `3.13.15` (Set up successfully) |
+| **SQL Server Image** | `mcr.microsoft.com/mssql/server:2022-latest` | **Verified**: Service container started & became healthy (`00058def79b6...`) |
+| **ODBC Driver** | `msodbcsql18` | **FAILED at Step 5**: `gpg: cannot open '/dev/tty': No such device or address` |
+| **Readiness Result** | Deterministic `pyodbc` probe | Skipped due to step 5 failure |
+| **Database Provisioning** | `StudioWebsiteDev` & `StudioWebsiteTest` | Skipped due to step 5 failure |
+| **Alembic Revision** | `4941998763bd` | Skipped due to step 5 failure |
+| **Application Test Result** | 85 collected / 85 passed | Skipped due to step 5 failure |
+| **Sprint 0 Result** | 7 collected / 7 passed | Skipped due to step 5 failure |
+| **Workflow Exit Status** | Success | **FAILURE (Exit Code 2 on Step 5)** |
 
 ---
 
-## 14. CI LIVE VERIFICATION STATUS
+## 14. CI LIVE VERIFICATION & FAILURE DIAGNOSTICS
 
-- **GitHub Repository:** `https://github.com/dev806/website.git`
+- **GitHub Repository:** `https://github.com/dev806/website`
 - **Branch:** `main`
-- **Commit SHA:** `cfb1c5e`
-- **Workflow / Run Identifier:** Awaiting first remote run upon push
-- **Push Blocker:** GitHub authentication must be performed interactively by the repository owner via browser/credential manager.
+- **Commit SHA:** `f0e0721e3af11eaeefa3d1f736afc6501ca5f6ba`
+- **Workflow / Run Identifier:** Run ID `35255994413` (Job ID `105319670768`)
+- **Failed Workflow Step:** Step 5 (`Install Microsoft ODBC Driver 18 for SQL Server`)
+- **Exact Failure Log:**
+  ```text
+  2026-09-17T17:59:28.7117021Z set -e
+  2026-09-17T17:59:28.7117021Z curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
+  2026-09-17T17:59:28.7305063Z gpg: cannot open '/dev/tty': No such device or address
+  2026-09-17T17:59:28.7681892Z ##[error]Process completed with exit code 2.
+  ```
+- **Likely Root Cause:** The file `/usr/share/keyrings/microsoft-prod.gpg` is pre-populated on the GitHub Actions `ubuntu-24.04` runner image. When `gpg --dearmor` attempts to write to an existing destination without `--yes` or prior removal, it prompts interactively on `/dev/tty` for overwrite confirmation. In headless CI runners without a pseudo-terminal, this causes immediate exit code 2.
+- **Remediation Required:** In `.github/workflows/ci.yml`, remove any existing keyring file or pass `--yes` to `gpg --dearmor`, and use Microsoft's official `prod.list` configuration:
+  ```bash
+  sudo rm -f /usr/share/keyrings/microsoft-prod.gpg
+  curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor --yes -o /usr/share/keyrings/microsoft-prod.gpg
+  curl -fsSL https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
+  sudo apt-get update
+  sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc-dev
+  ```
 
 ---
 
 ## FINAL STATUS
 
-### PHASE 6.2.1 CI LIVE VERIFICATION PENDING — OWNER GITHUB ACTION REQUIRED
+### PHASE 6.2.1 CI VERIFICATION BLOCKED — Step 5 (Install Microsoft ODBC Driver 18) gpg keyring overwrite error
+
 
