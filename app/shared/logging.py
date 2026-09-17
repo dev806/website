@@ -74,8 +74,11 @@ def configure_logging(level: str = "INFO", json_format: bool = False) -> None:
     root_logger = logging.getLogger()
     root_logger.setLevel(level)
 
-    # Avoid duplicate handlers
-    root_logger.handlers.clear()
+    # Avoid duplicate handlers while preserving test capture handlers (e.g. pytest caplog)
+    root_logger.handlers = [
+        h for h in root_logger.handlers
+        if "LogCaptureHandler" in h.__class__.__name__ or hasattr(h, "records")
+    ]
 
     handler = logging.StreamHandler(sys.stdout)
     handler.addFilter(SensitiveFilter())
