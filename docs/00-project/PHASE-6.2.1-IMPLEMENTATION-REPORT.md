@@ -290,28 +290,46 @@ Prior to repository staging, the workspace was audited for sensitive files, cred
 
 **Pre-Flight Security Finding:** No secrets, private keys, production credentials, or real tokens will be committed to source control.
 
-### 13.2 Git & GitHub CLI Availability Check
-- **`git --version`:** `CommandNotFoundException` — Git is not installed or not registered in the system environment `PATH`.
-- **`gh --version`:** `CommandNotFoundException` — GitHub CLI is not installed in the system environment `PATH`.
-- Per governing instructions: *"If Git is not installed: STOP and report: GIT NOT INSTALLED — OWNER ACTION REQUIRED. Do NOT download/install Git automatically."*
+### 13.2 Git & Repository Setup Status
+- **`git --version`:** `git version 2.55.0.windows.5` (Operational).
+- **Git Identity:** Configured (`user.name: dev806`, `user.email: devesh870891@gmail.com`).
+- **Repository Initialized:** Branch `main` (`D:\Project_website\.git\`).
+- **Commit SHA:** `cfb1c5e` (`Phase 6.2.1 CI infrastructure`).
+- **Remote:** `origin https://github.com/dev806/website.git`.
+- **Push Status:** Authentication pending (`git-credential-manager` requires interactive browser sign-in from the owner).
 
 ### 13.3 CI Execution Status Matrix
 
-| Dimension | Planned CI Target | Current Local Verification Status |
+| Dimension | Target CI Specification | Execution / Tracking Status |
 | :--- | :--- | :--- |
-| **GitHub Repository** | TBD (Owner configured) | Not initialized locally (`.git` absent) |
-| **Runner** | `ubuntu-latest` | Workflow authored and validated |
-| **Python Version** | 3.13 | Workflow authored (`actions/setup-python@v5`) |
-| **SQL Server Image** | `mcr.microsoft.com/mssql/server:2022-latest` | Service container declared with port 1433 |
-| **Readiness Probe** | Polling `pyodbc` connection loop (up to 30 attempts) | Script authored in workflow |
-| **Databases** | `StudioWebsiteDev` & `StudioWebsiteTest` | Idempotent T-SQL provisioning scripted |
-| **Alembic Revision** | `4941998763bd` | Migration and assertion scripted |
-| **Application Tests** | `pytest tests/ -v` (85 tests) | Sequential execution scripted |
-| **Sprint 0 Tests** | `pytest spikes/test_sprint0_suite.py -v` (7 tests) | Sequential execution scripted |
-| **Workflow Exit Status** | Success (pending remote execution) | **PENDING LIVE EXECUTION** |
+| **GitHub Repository** | `https://github.com/dev806/website.git` | Configured as `origin` |
+| **Branch** | `main` | Initialized and committed (`cfb1c5e`) |
+| **Commit SHA** | `cfb1c5e` | Recorded locally; awaiting push |
+| **GitHub Actions Workflow** | `.github/workflows/ci.yml` | Committed in repository root |
+| **Runner** | `ubuntu-latest` | Pending live remote run |
+| **Python Version** | 3.13 | Pending live remote run |
+| **SQL Server Image** | `mcr.microsoft.com/mssql/server:2022-latest` | Pending live remote run |
+| **ODBC Driver** | `msodbcsql18` | Pending live remote run |
+| **Readiness Result** | Deterministic `pyodbc` connection probe | Pending live remote run |
+| **Database Provisioning** | `StudioWebsiteDev` & `StudioWebsiteTest` | Pending live remote run |
+| **Alembic Revision** | `4941998763bd` | Pending live remote run |
+| **Application Test Result** | 85 collected / 85 passed expected | Pending live remote run |
+| **Sprint 0 Result** | 7 collected / 7 passed expected | Pending live remote run |
+| **Workflow Exit Status** | Success | **PENDING LIVE EXECUTION (AUTH REQUIRED)** |
+
+---
+
+## 14. CI LIVE VERIFICATION STATUS
+
+- **GitHub Repository:** `https://github.com/dev806/website.git`
+- **Branch:** `main`
+- **Commit SHA:** `cfb1c5e`
+- **Workflow / Run Identifier:** Awaiting first remote run upon push
+- **Push Blocker:** GitHub authentication must be performed interactively by the repository owner via browser/credential manager.
 
 ---
 
 ## FINAL STATUS
 
 ### PHASE 6.2.1 CI LIVE VERIFICATION PENDING — OWNER GITHUB ACTION REQUIRED
+
