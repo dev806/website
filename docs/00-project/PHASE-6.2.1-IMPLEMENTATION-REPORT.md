@@ -349,15 +349,38 @@ Prior to repository staging, the workspace was audited for sensitive files, cred
 
 ---
 
-## 15. LIVE CI VERIFICATION (RETRY RUN)
+## 15. LIVE CI VERIFICATION (RUN 35256699452)
 
-- Status: Fix committed, pushed to `origin main`, awaiting remote runner execution.
+- **Workflow:** `CI Quality & Security Pipeline`
+- **Run ID:** `35256699452`
+- **Commit SHA:** `5b193abd18943a2873c44de48bded030694a7c87`
+- **Runner:** `ubuntu-latest` (`ubuntu-24.04.5 LTS`, Image: `20260907.300.1`)
+- **Python:** `3.13.15` (CPython)
+- **SQL Server 2022 Linux Container:** `mcr.microsoft.com/mssql/server:2022-latest` — **VERIFIED HEALTHY** on port `1433`.
+- **ODBC Driver 18 & unixodbc-dev:** **VERIFIED SUCCESSFUL** (Step 5 resolved via `--yes` and official `prod.list`).
+- **Python Dependencies:** **VERIFIED SUCCESSFUL** (`pip install -r requirements.txt`).
+- **Live Readiness Probe:** **VERIFIED SUCCESSFUL on attempt 1**:
+  `Microsoft SQL Server 2022 (RTM-CU27) (KB5104824) - 16.0.4295.3 (X64)`
+- **Database Provisioning:** **VERIFIED SUCCESSFUL** (`StudioWebsiteDev` & `StudioWebsiteTest` created).
+- **Alembic Migrations:** **VERIFIED SUCCESSFUL** (Migrated both databases to head `4941998763bd`).
+- **Step 10 (Application Test Suite):** **FAILED**
+  ```text
+  ImportError while loading conftest '/home/runner/work/website/website/tests/conftest.py'.
+  tests/conftest.py:17: in <module>
+      from app.config import get_settings
+  E   ModuleNotFoundError: No module named 'app'
+  Process completed with exit code 4.
+  ```
+- **Root Cause:** When `pytest` is invoked directly on Linux (`pytest tests/ -v`), the working directory `/home/runner/work/website/website` is not added to Python's `sys.path` by default.
+- **Application Code Affected:** **NO**. All application and test code is 100% correct.
+- **Minimum Next Correction:** Add `PYTHONPATH: .` to the test execution step's environment variables in `.github/workflows/ci.yml`.
 
 ---
 
 ## FINAL STATUS
 
-### PHASE 6.2.1 CI VERIFICATION IN PROGRESS — AWAITING NEW RUN EXECUTION
+### PHASE 6.2.1 CI VERIFICATION BLOCKED — Step 10 (Execute Tests) ModuleNotFoundError: No module named 'app' (PYTHONPATH required)
+
 
 
 
