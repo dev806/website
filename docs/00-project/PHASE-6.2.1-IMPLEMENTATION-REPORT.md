@@ -335,19 +335,29 @@ Prior to repository staging, the workspace was audited for sensitive files, cred
   2026-09-17T17:59:28.7681892Z ##[error]Process completed with exit code 2.
   ```
 - **Likely Root Cause:** The file `/usr/share/keyrings/microsoft-prod.gpg` is pre-populated on the GitHub Actions `ubuntu-24.04` runner image. When `gpg --dearmor` attempts to write to an existing destination without `--yes` or prior removal, it prompts interactively on `/dev/tty` for overwrite confirmation. In headless CI runners without a pseudo-terminal, this causes immediate exit code 2.
-- **Remediation Required:** In `.github/workflows/ci.yml`, remove any existing keyring file or pass `--yes` to `gpg --dearmor`, and use Microsoft's official `prod.list` configuration:
-  ```bash
-  sudo rm -f /usr/share/keyrings/microsoft-prod.gpg
-  curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor --yes -o /usr/share/keyrings/microsoft-prod.gpg
-  curl -fsSL https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
-  sudo apt-get update
-  sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc-dev
+- **Remediation Applied:** In `.github/workflows/ci.yml`, updated Step 5 to remove existing keyring (`sudo rm -f /usr/share/keyrings/microsoft-prod.gpg`), supply `--yes` to `gpg --dearmor`, and configure Microsoft's official `prod.list`:
+  ```yaml
+      - name: Install Microsoft ODBC Driver 18 for SQL Server
+        run: |
+          set -e
+          sudo rm -f /usr/share/keyrings/microsoft-prod.gpg
+          curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor --yes -o /usr/share/keyrings/microsoft-prod.gpg
+          curl -fsSL https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
+          sudo apt-get update
+          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc-dev
   ```
+
+---
+
+## 15. LIVE CI VERIFICATION (RETRY RUN)
+
+- Status: Fix committed, pushed to `origin main`, awaiting remote runner execution.
 
 ---
 
 ## FINAL STATUS
 
-### PHASE 6.2.1 CI VERIFICATION BLOCKED — Step 5 (Install Microsoft ODBC Driver 18) gpg keyring overwrite error
+### PHASE 6.2.1 CI VERIFICATION IN PROGRESS — AWAITING NEW RUN EXECUTION
+
 
 
