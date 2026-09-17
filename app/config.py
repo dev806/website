@@ -57,6 +57,17 @@ class Settings(BaseSettings):
     ai_timeout_seconds: float = Field(default=10.0, ge=0.1, le=60.0, description="AI gateway timeout threshold")
     ai_primary_model: str = Field(default="studio-mock-v1", description="Target model identifier")
 
+    # Observability & Telemetry Settings
+    log_format: Literal["text", "json"] = Field(
+        default="text", description="Log output format (text or json)"
+    )
+    slow_query_threshold_ms: float = Field(
+        default=500.0, ge=10.0, le=60000.0, description="Slow query threshold in milliseconds"
+    )
+    slow_request_threshold_ms: float = Field(
+        default=1000.0, ge=10.0, le=60000.0, description="Slow HTTP request threshold in milliseconds"
+    )
+
     # Session & Cookie Security
     session_cookie_name: str = Field(default="studio_session_id", description="Session cookie name")
     session_max_age_seconds: int = Field(default=2592000, description="Session TTL (default 30 days)")

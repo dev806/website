@@ -48,6 +48,7 @@ from app.modules.review.service import ReviewService
 from app.shared.exceptions import AppException
 from app.shared.logging import get_logger
 from app.shared.security import hash_token, scrub_pii
+from app.shared.telemetry import emit_telemetry_event
 
 logger = get_logger(__name__)
 
@@ -102,6 +103,13 @@ class DiscoveryService:
 
         logger.info(
             f"Initialized new discovery session {session.id} [entry_point={entry_point}]"
+        )
+        emit_telemetry_event(
+            "discovery_started",
+            {
+                "session_token_hash": token_hash,
+                "entry_point": entry_point,
+            },
         )
         return session, signed_cookie, raw_token
 
@@ -175,6 +183,15 @@ class DiscoveryService:
             target_state=target_state,
             db=db,
             reason=f"Clarification questions generated via {source_flag}.",
+        )
+
+        emit_telemetry_event(
+            "discovery_stage_completed",
+            {
+                "session_token_hash": session.session_token_hash,
+                "stage_number": 1,
+                "stage_name": "problem_intake",
+            },
         )
 
         return SubmitProblemData(
@@ -264,6 +281,15 @@ class DiscoveryService:
             reason="Free ungated Opportunity Map generated.",
         )
 
+        emit_telemetry_event(
+            "discovery_stage_completed",
+            {
+                "session_token_hash": session.session_token_hash,
+                "stage_number": 3,
+                "stage_name": "clarification_answers",
+            },
+        )
+
         # Backtracking Support: If session is already unlocked, re-synthesize Blueprint & Estimate
         if session.is_unlocked:
             logger.info(
@@ -305,6 +331,13 @@ class DiscoveryService:
         100% Free & Ungated.
         """
         opps = self.opportunity_service.get_opportunities(db=db, session_id=session.id)
+        emit_telemetry_event(
+            "opportunity_map_viewed",
+            {
+                "session_token_hash": session.session_token_hash,
+                "opportunity_count": len(opps),
+            },
+        )
         return OpportunityMapData(
             session_id=session.id,
             opportunities=opps,
@@ -329,6 +362,10 @@ class DiscoveryService:
                 target_state=DiscoveryState.BLUEPRINT_REQUESTED,
                 db=db,
                 reason="User initiated blueprint progressive lead gate.",
+            )
+            emit_telemetry_event(
+                "blueprint_unlock_started",
+                {"session_token_hash": session.session_token_hash},
             )
 
         # Capture Lead & Record Consent
@@ -363,6 +400,19 @@ class DiscoveryService:
             target_state=DiscoveryState.ESTIMATE_GENERATED,
             db=db,
             reason="Confidence-banded indicative planning estimate calculated.",
+        )
+
+        emit_telemetry_event(
+            "blueprint_unlocked",
+            {"session_token_hash": session.session_token_hash},
+        )
+        emit_telemetry_event(
+            "discovery_stage_completed",
+            {
+                "session_token_hash": session.session_token_hash,
+                "stage_number": 5,
+                "stage_name": "lead_unlock",
+            },
         )
 
         return LeadUnlockData(
@@ -418,6 +468,14 @@ class DiscoveryService:
 
         estimate_dto = EstimationService.format_display_dto(estimate)
 
+        emit_telemetry_event(
+            "estimate_viewed",
+            {
+                "session_token_hash": session.session_token_hash,
+                "confidence": estimate_dto.confidence,
+            },
+        )
+
         section_dtos = [
             BlueprintSectionDisplayDTO(
                 index=s.section_index,
@@ -466,6 +524,15 @@ class DiscoveryService:
             target_state=DiscoveryState.COMPLETED,
             db=db,
             reason="Review ticket enqueued; session marked completed.",
+        )
+
+        emit_telemetry_event(
+            "discovery_stage_completed",
+            {
+                "session_token_hash": session.session_token_hash,
+                "stage_number": 7,
+                "stage_name": "architect_review",
+            },
         )
 
         return review_data

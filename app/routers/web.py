@@ -15,6 +15,7 @@ from fastapi.responses import HTMLResponse, PlainTextResponse
 from fastapi.templating import Jinja2Templates
 from app.shared.logging import get_logger
 from app.shared.security import scrub_pii
+from app.shared.telemetry import emit_telemetry_event
 
 logger = get_logger(__name__)
 
@@ -277,12 +278,18 @@ async def contact_post_view(request: Request) -> HTMLResponse:
 
     # Sanitize message before logging
     sanitized_message = scrub_pii(message)
-    sanitized_name = scrub_pii(full_name)
 
     logger.info(
-        f"Inquiry received from {sanitized_name} ({corporate_email}) | "
-        f"Company: {company_name or 'N/A'} | Scope: {project_scope or 'General'} | "
+        f"Inquiry received | Scope: {project_scope or 'General'} | "
         f"Message length: {len(sanitized_message)}"
+    )
+
+    emit_telemetry_event(
+        "contact_submitted",
+        {
+            "project_scope_category": project_scope or "general",
+            "has_company": bool(company_name),
+        },
     )
 
     # Safe success response (no fake claims of email dispatch)

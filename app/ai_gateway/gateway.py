@@ -4,6 +4,8 @@ Executes pre-transit PII scrubbing, timeout bounding, Pydantic validation, and f
 """
 
 import asyncio
+import logging
+import time
 from typing import Optional
 from pydantic import ValidationError
 from app.ai_gateway.fallback_catalog import (
@@ -16,6 +18,7 @@ from app.ai_gateway.schemas import ClarificationQuestionsDTO, OpportunityMapDTO
 from app.config import Settings, get_settings
 from app.shared.logging import get_logger
 from app.shared.security import scrub_pii
+from app.shared.telemetry import emit_telemetry_event
 
 logger = get_logger(__name__)
 
@@ -44,6 +47,7 @@ class AIServiceGateway(IAIServiceGateway):
         """
         # Step 1: Pre-transit PII scrubbing
         sanitized_text = scrub_pii(problem_text)
+        start_time = time.perf_counter()
 
         system_instruction = (
             "You are a Principal Software Architect diagnosing business operational friction. "
@@ -61,25 +65,58 @@ class AIServiceGateway(IAIServiceGateway):
                 timeout=self.timeout,
             )
 
+            duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+
             # Validate against target schema
             if isinstance(raw_result, ClarificationQuestionsDTO):
+                emit_telemetry_event(
+                    "ai_completion",
+                    {"operation": "clarifications", "model": self.settings.ai_primary_model, "duration_ms": duration_ms, "source": "PROVIDER_LLM"},
+                    is_operational=True,
+                )
                 return raw_result, "PROVIDER_LLM"
             if isinstance(raw_result, dict):
                 validated = ClarificationQuestionsDTO.model_validate(raw_result)
+                emit_telemetry_event(
+                    "ai_completion",
+                    {"operation": "clarifications", "model": self.settings.ai_primary_model, "duration_ms": duration_ms, "source": "PROVIDER_LLM"},
+                    is_operational=True,
+                )
                 return validated, "PROVIDER_LLM"
 
             raise ValueError(f"Unexpected provider output type: {type(raw_result)}")
 
         except asyncio.TimeoutError:
+            duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
             logger.warning("AI Gateway timeout exceeded during clarification generation; engaging fallback catalog")
+            emit_telemetry_event(
+                "ai_fallback",
+                {"operation": "clarifications", "model": self.settings.ai_primary_model, "duration_ms": duration_ms, "source": "FALLBACK_TIMEOUT"},
+                is_operational=True,
+                level=logging.WARNING,
+            )
             return get_heuristic_questions(problem_text), "FALLBACK_TIMEOUT"
 
         except (ValidationError, ValueError) as val_err:
+            duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
             logger.warning(f"AI Gateway schema validation error: {val_err}; engaging fallback catalog")
+            emit_telemetry_event(
+                "ai_fallback",
+                {"operation": "clarifications", "model": self.settings.ai_primary_model, "duration_ms": duration_ms, "source": "FALLBACK_SCHEMA_ERROR"},
+                is_operational=True,
+                level=logging.WARNING,
+            )
             return get_heuristic_questions(problem_text), "FALLBACK_SCHEMA_ERROR"
 
         except Exception as exc:
+            duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
             logger.error(f"AI Gateway upstream provider exception: {exc}; engaging fallback catalog")
+            emit_telemetry_event(
+                "ai_fallback",
+                {"operation": "clarifications", "model": self.settings.ai_primary_model, "duration_ms": duration_ms, "source": "FALLBACK_PROVIDER_ERROR"},
+                is_operational=True,
+                level=logging.WARNING,
+            )
             return get_heuristic_questions(problem_text), "FALLBACK_PROVIDER_ERROR"
 
     async def synthesize_opportunity_map(
@@ -90,6 +127,8 @@ class AIServiceGateway(IAIServiceGateway):
         Falls back to deterministic studio catalog on failure.
         """
         sanitized_text = scrub_pii(problem_text)
+        start_time = time.perf_counter()
+
         system_instruction = (
             "You are an Enterprise Systems Architect synthesizing an Executive Opportunity Map. "
             "Group opportunities into Quick Wins, Core Build, Integrations, and System Risks. "
@@ -108,22 +147,55 @@ class AIServiceGateway(IAIServiceGateway):
                 timeout=self.timeout,
             )
 
+            duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+
             if isinstance(raw_result, OpportunityMapDTO):
+                emit_telemetry_event(
+                    "ai_completion",
+                    {"operation": "opportunity_map", "model": self.settings.ai_primary_model, "duration_ms": duration_ms, "source": "PROVIDER_LLM"},
+                    is_operational=True,
+                )
                 return raw_result, "PROVIDER_LLM"
             if isinstance(raw_result, dict):
                 validated = OpportunityMapDTO.model_validate(raw_result)
+                emit_telemetry_event(
+                    "ai_completion",
+                    {"operation": "opportunity_map", "model": self.settings.ai_primary_model, "duration_ms": duration_ms, "source": "PROVIDER_LLM"},
+                    is_operational=True,
+                )
                 return validated, "PROVIDER_LLM"
 
             raise ValueError(f"Unexpected provider output type: {type(raw_result)}")
 
         except asyncio.TimeoutError:
+            duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
             logger.warning("AI Gateway timeout exceeded during opportunity map synthesis; engaging fallback catalog")
+            emit_telemetry_event(
+                "ai_fallback",
+                {"operation": "opportunity_map", "model": self.settings.ai_primary_model, "duration_ms": duration_ms, "source": "FALLBACK_TIMEOUT"},
+                is_operational=True,
+                level=logging.WARNING,
+            )
             return get_heuristic_opportunity_map(problem_text), "FALLBACK_TIMEOUT"
 
         except (ValidationError, ValueError) as val_err:
+            duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
             logger.warning(f"AI Gateway schema validation error: {val_err}; engaging fallback catalog")
+            emit_telemetry_event(
+                "ai_fallback",
+                {"operation": "opportunity_map", "model": self.settings.ai_primary_model, "duration_ms": duration_ms, "source": "FALLBACK_SCHEMA_ERROR"},
+                is_operational=True,
+                level=logging.WARNING,
+            )
             return get_heuristic_opportunity_map(problem_text), "FALLBACK_SCHEMA_ERROR"
 
         except Exception as exc:
+            duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
             logger.error(f"AI Gateway upstream provider exception: {exc}; engaging fallback catalog")
+            emit_telemetry_event(
+                "ai_fallback",
+                {"operation": "opportunity_map", "model": self.settings.ai_primary_model, "duration_ms": duration_ms, "source": "FALLBACK_PROVIDER_ERROR"},
+                is_operational=True,
+                level=logging.WARNING,
+            )
             return get_heuristic_opportunity_map(problem_text), "FALLBACK_PROVIDER_ERROR"

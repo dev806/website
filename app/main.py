@@ -81,7 +81,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     settings = get_settings()
     configure_logging(
         level="DEBUG" if settings.debug else "INFO",
-        json_format=(settings.app_env == "production"),
+        json_format=(settings.log_format == "json" or settings.app_env == "production"),
     )
     logger.info(f"Booting {settings.app_name} [env={settings.app_env}]")
 
@@ -115,19 +115,28 @@ def create_app(settings: Optional[Settings] = None) -> FastAPI:
     # -------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------
-    # Middleware: Native In-Memory Rate Limiting (Phase 6.1)
+    # Middleware: Native In-Memory Rate Limiting (Phase 6.1 / 6.2.3)
     # -------------------------------------------------------------------------
     @application.middleware("http")
     async def rate_limit_middleware(request: Request, call_next):
         if request.method == "POST" and request.url.path in RATE_LIMITED_POST_ROUTES:
             client_ip = _get_client_ip(request)
             if not check_in_memory_rate_limit(client_ip, request.url.path):
-                logger.warning(f"Rate limit exceeded for IP {client_ip} on path {request.url.path}")
+                from app.shared.security import hash_ip
+                ip_hash = hash_ip(client_ip)
+                logger.warning(
+                    f"Rate limit exceeded on path {request.url.path} (client: {ip_hash[:12]}...)",
+                    extra={
+                        "event": "rate_limit_exceeded",
+                        "http": {"method": "POST", "path": request.url.path, "status_code": 429},
+                        "ip_hash": ip_hash,
+                    },
+                )
                 resp = format_error_response(
                     code="RATE_LIMIT_EXCEEDED",
                     message="Too many requests. Please try again later.",
                     details=[{"field": "ip", "issue": "Rate limit exceeded (maximum 5 requests per minute)."}],
-                    request_id="",
+                    request_id=correlation_id_ctx.get(),
                     status_code=status.HTTP_429_TOO_MANY_REQUESTS,
                 )
                 resp.headers["Retry-After"] = "60"
@@ -159,7 +168,7 @@ def create_app(settings: Optional[Settings] = None) -> FastAPI:
         return response
 
     # -------------------------------------------------------------------------
-    # Middleware: Request Correlation ID (outermost — wraps all responses)
+    # Middleware: Request Correlation ID & Performance Telemetry (Phase 6.2.3)
     # -------------------------------------------------------------------------
     @application.middleware("http")
     async def correlation_id_middleware(request: Request, call_next):
@@ -170,16 +179,48 @@ def create_app(settings: Optional[Settings] = None) -> FastAPI:
         )
         token = correlation_id_ctx.set(corr_id)
         start_time = time.perf_counter()
+        status_code = 500
 
         try:
             response = await call_next(request)
+            status_code = response.status_code
             response.headers["X-Correlation-ID"] = corr_id
             return response
         finally:
             duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
-            logger.debug(
-                f"{request.method} {request.url.path} completed in {duration_ms}ms"
-            )
+            path = request.url.path
+            is_noise = path.startswith(("/health", "/static")) or path == "/favicon.ico"
+
+            if is_noise:
+                logger.debug(
+                    f"{request.method} {path} completed in {duration_ms}ms [{status_code}]"
+                )
+            else:
+                logger.info(
+                    f"{request.method} {path} {status_code} - {duration_ms}ms",
+                    extra={
+                        "event": "http_request_completed",
+                        "http": {
+                            "method": request.method,
+                            "path": path,
+                            "status_code": status_code,
+                        },
+                        "duration_ms": duration_ms,
+                    },
+                )
+                if duration_ms > cfg.slow_request_threshold_ms:
+                    logger.warning(
+                        f"Slow HTTP request: {request.method} {path} took {duration_ms}ms (threshold: {cfg.slow_request_threshold_ms}ms)",
+                        extra={
+                            "event": "slow_http_request",
+                            "http": {
+                                "method": request.method,
+                                "path": path,
+                                "status_code": status_code,
+                            },
+                            "duration_ms": duration_ms,
+                        },
+                    )
             correlation_id_ctx.reset(token)
 
 
