@@ -1,0 +1,83 @@
+<div class="discovery-surface" id="stage-5-blueprint" x-data="{ 
+    expanded: { 1: true, 2: true },
+    toggle(idx) { this.expanded[idx] = !this.expanded[idx]; },
+    expandAll() { for (let i = 1; i <= 18; i++) this.expanded[i] = true; },
+    collapseAll() { this.expanded = {}; }
+}">
+    <!-- Out-of-band stepper update for Stage 5 -->
+    {% if not is_full_page %}
+    {% set is_oob = true %}
+    {% set current_step = 5 %}
+    {% set step_percentage = "71%" %}
+    {% set step_title = "Solution Blueprint" %}
+    {% include "partials/discovery/stepper.html" %}
+    {% endif %}
+
+    <!-- Eyebrow & Status Row -->
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-3); margin-bottom: var(--space-3);">
+        <span class="discovery-eyebrow" style="margin-bottom: 0;">Engineering Specification</span>
+
+        <!-- Mandatory Preliminary Draft Badge (BD-010) -->
+        <div class="badge-ai-preliminary" role="status">
+            <span aria-hidden="true" style="color: #6366f1;">✦</span>
+            <span>AI-GENERATED PRELIMINARY SPECIFICATION</span>
+            <span style="opacity: 0.5;">&bull; Subject to Senior Architect Peer Review</span>
+        </div>
+    </div>
+
+    <!-- Dominant Heading -->
+    <h1 class="discovery-hero-heading" style="font-size: clamp(1.6rem, 3vw, 2.1rem);">Comprehensive Solution Blueprint</h1>
+    <p class="discovery-hero-sub" style="margin-bottom: var(--space-6);">
+        Your tailored 18-section architectural blueprint detailing system topologies, component models, data pipelines, and security guardrails.
+    </p>
+
+    <!-- Toolbar for sections -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4); border-bottom: 1px solid rgba(255, 255, 255, 0.06); padding-bottom: 10px;">
+        <span style="font-size: 0.8rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">
+            18 Architectural Modules
+        </span>
+        <div style="display: flex; gap: 8px;">
+            <button type="button" class="btn btn-ghost" style="font-size: 0.775rem; padding: 4px 10px; min-height: 28px;" @click="expandAll()">Expand All</button>
+            <button type="button" class="btn btn-ghost" style="font-size: 0.775rem; padding: 4px 10px; min-height: 28px;" @click="collapseAll()">Collapse All</button>
+        </div>
+    </div>
+
+    <!-- 18 Canonical Blueprint Sections -->
+    <div class="blueprint-sections-list" role="region" aria-label="18 Blueprint Sections">
+        {% for s in blueprint.sections %}
+        {% set sec_idx = s.index if s.index is defined else s.section_index %}
+        {% set sec_content = s.content if s.content is defined else s.content_markdown %}
+        <div class="blueprint-section-card" id="section-card-{{ sec_idx }}">
+            <button type="button" 
+                    class="section-header-btn" 
+                    @click="toggle({{ sec_idx }})"
+                    :aria-expanded="expanded[{{ sec_idx }}] ? 'true' : 'false'">
+                <div class="section-title-wrapper">
+                    <span class="section-num">{{ "%02d" % sec_idx }}</span>
+                    <span style="font-weight: 600; color: #f1f5f9;">{{ s.title }}</span>
+                </div>
+                <span style="font-family: var(--font-mono); font-size: 1.1rem; color: #6366f1; transition: transform 0.15s ease;" x-text="expanded[{{ sec_idx }}] ? '−' : '+'">+</span>
+            </button>
+            
+            <div class="section-body" x-show="expanded[{{ sec_idx }}]" x-cloak>
+                <div style="white-space: pre-line; color: #cbd5e1; font-size: 0.9rem; line-height: 1.65;">{{ sec_content }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="btn-row" style="margin-top: var(--space-6); margin-bottom: var(--space-4);">
+        <button type="button" 
+                class="btn btn-secondary" 
+                hx-post="/discovery/backtrack" 
+                hx-vals='{"target_stage": "opportunity_map"}'
+                hx-target="#discovery-viewport" 
+                hx-swap="innerHTML transition:true"
+                hx-indicator="#discovery-loading">
+            &larr; Back to Opportunity Map
+        </button>
+        <a href="#stage-6-estimates" class="btn btn-secondary" style="text-decoration: none;">
+            <span>Jump to Indicative Estimates &darr;</span>
+        </a>
+    </div>
+</div>

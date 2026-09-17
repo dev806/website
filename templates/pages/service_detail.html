@@ -1,0 +1,96 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="public-page-header">
+    <div class="public-container">
+        <div class="breadcrumb-trail">
+            <a href="/services">Services</a> &nbsp;/&nbsp; <span class="active-crumb">{{ pillar.title }}</span>
+        </div>
+        <div class="page-eyebrow mt-4">CAPABILITY PILLAR</div>
+        <h1 class="public-page-title">{{ pillar.title }}</h1>
+        <p class="public-page-subtitle">{{ pillar.tagline }}</p>
+    </div>
+</section>
+
+<section class="section-padded">
+    <div class="public-container">
+        <div class="detail-layout-grid">
+            <!-- Left Main Column -->
+            <div class="detail-main-col">
+                <div class="detail-block">
+                    <h2 class="detail-block-title">Overview &amp; Architectural Focus</h2>
+                    <p class="detail-text">{{ pillar.description }}</p>
+                </div>
+
+                <div class="detail-block mt-8">
+                    <h2 class="detail-block-title">Engineering Capabilities</h2>
+                    <div class="capabilities-grid">
+                        {% for cap in pillar.capabilities %}
+                        <div class="capability-card">
+                            <div class="capability-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            </div>
+                            <div class="capability-text">{{ cap }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="detail-block mt-8">
+                    <h2 class="detail-block-title">Key Deliverables</h2>
+                    <ul class="deliverables-list">
+                        {% for del in pillar.deliverables %}
+                        <li class="deliverable-item">
+                            <span class="deliverable-check">
+                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3.5 8.5 6.5 11.5 12.5 4.5"/></svg>
+                            </span>
+                            <span>{{ del }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="detail-cta-box mt-10">
+                    <h3 class="detail-cta-title">Ready to Architect Your Solution?</h3>
+                    <p class="detail-cta-desc">
+                        Describe your operational challenge in our interactive discovery platform to receive a tailored solution blueprint and non-binding budgetary estimate.
+                    </p>
+                    <div class="mt-4">
+                        <a href="/discovery" class="btn-hero-primary">
+                            <span>Start Discovery with {{ pillar.title }}</span> &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar -->
+            <div class="detail-sidebar">
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">All Capability Pillars</h3>
+                    <ul class="sidebar-links">
+                        {% for item in all_pillars %}
+                        <li>
+                            <a href="/services/{{ item.slug }}" class="sidebar-link {% if item.slug == pillar.slug %}active{% endif %}">
+                                <span>{{ item.title }}</span>
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="sidebar-card mt-6 highlight-card">
+                    <h3 class="sidebar-title">Architect Consultation</h3>
+                    <p class="sidebar-desc">
+                        Speak directly with a senior architect about your project requirements.
+                    </p>
+                    <a href="/contact" class="btn-secondary w-full text-center block mt-4">
+                        Contact Architects &rarr;
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

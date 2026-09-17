@@ -1,0 +1,79 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="public-page-header">
+    <div class="public-container">
+        <div class="page-eyebrow">CAPABILITY PILLARS</div>
+        <h1 class="public-page-title">What We Build</h1>
+        <p class="public-page-subtitle">
+            Five specialized engineering pillars designed to solve mission-critical operational challenges.
+        </p>
+    </div>
+</section>
+
+<section class="section-padded">
+    <div class="public-container">
+        <div class="pillars-index-list">
+            {% for pillar in pillars %}
+            <div class="pillar-index-item">
+                <div class="pillar-index-header">
+                    <div class="pillar-icon-badge">
+                        {% if pillar.slug == 'software' %}
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                        {% elif pillar.slug == 'ai' %}
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="15" x2="23" y2="15"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="15" x2="4" y2="15"/></svg>
+                        {% elif pillar.slug == 'automation' %}
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                        {% elif pillar.slug == 'integrations' %}
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                        {% else %}
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                        {% endif %}
+                    </div>
+                    <div class="pillar-index-meta">
+                        <h2 class="pillar-index-title">{{ pillar.title }}</h2>
+                        <p class="pillar-index-tagline">{{ pillar.tagline }}</p>
+                    </div>
+                </div>
+                
+                <p class="pillar-index-desc">{{ pillar.description }}</p>
+
+                <div class="pillar-capabilities-preview">
+                    <div class="capabilities-title">Core Capabilities:</div>
+                    <ul class="capabilities-list">
+                        {% for cap in pillar.capabilities %}
+                        <li><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--color-accent); margin-right: 6px;"><polyline points="3.5 8.5 6.5 11.5 12.5 4.5"/></svg>{{ cap }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="pillar-index-action">
+                    <a href="/services/{{ pillar.slug }}" class="btn-secondary">
+                        <span>View Detailed Pillar Blueprint</span> &rarr;
+                    </a>
+                    <a href="/discovery" class="btn-text-link">
+                        <span>Start Discovery for {{ pillar.title }}</span> &rarr;
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="section-padded bg-surface-alt text-center">
+    <div class="public-container max-w-3xl">
+        <h2 class="section-title">Unsure Which Capability Fits Your Needs?</h2>
+        <p class="section-subtitle">
+            Our interactive discovery engine will analyze your problem statement and map it to the exact engineering pillar and architecture required.
+        </p>
+        <div class="mt-6">
+            <a href="/discovery" class="btn-hero-primary">
+                <span>Start With Your Problem</span> &rarr;
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

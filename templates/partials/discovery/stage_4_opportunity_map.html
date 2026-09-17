@@ -1,0 +1,145 @@
+<div class="discovery-surface" id="stage-4-surface" x-data="{ showUnlock: false }">
+    <!-- Out-of-band stepper update -->
+    {% if not is_full_page %}
+    {% set is_oob = true %}
+    {% set current_step = 4 %}
+    {% set step_percentage = "57%" %}
+    {% set step_title = "Executive Opportunity Map" %}
+    {% include "partials/discovery/stepper.html" %}
+    {% endif %}
+
+    <!-- Stage 3 Synthesis included at top of Stage 4 -->
+    {% if structured_context %}
+        {% include "partials/discovery/stage_3_context.html" %}
+    {% endif %}
+
+    <div class="ungated-banner">
+        <div class="ungated-banner-text">
+            <span>✨ <strong>100% Free &amp; Ungated Strategic Diagnostic:</strong> You have received our core technology diagnostic with zero upfront contact demands.</span>
+        </div>
+        <span class="badge-tag" style="background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.3); font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; margin-bottom: 0;">
+            Free Deliverable
+        </span>
+    </div>
+
+    <span class="discovery-eyebrow">Strategic Assessment</span>
+    <h1 class="discovery-hero-heading" style="font-size: clamp(1.6rem, 3vw, 2.1rem);">Your Executive Opportunity Map</h1>
+    <p class="discovery-hero-sub" style="margin-bottom: var(--space-6);">
+        Based on your operational inputs, our engine has identified the highest-leverage technology vectors, automation targets, and architectural patterns addressing your bottlenecks.
+    </p>
+
+    <div class="opp-grid" role="region" aria-label="Opportunity Map Items">
+        {% for opp in opportunities %}
+        <div class="opp-card opp-{{ opp.category|lower|replace('_', '-') }}">
+            <div class="opp-card-header">
+                <span class="badge-opp-category">{{ opp.category|replace('_', ' ') }}</span>
+                <span style="font-size: 0.775rem; color: #64748b;">Impact: <strong style="color: #f1f5f9;">{{ opp.business_impact }}</strong></span>
+            </div>
+            
+            <h3 class="opp-card-title">{{ opp.title }}</h3>
+            <p class="opp-card-desc">{{ opp.description }}</p>
+            
+            <div class="opp-meta-row">
+                <span>Complexity: <strong style="color: #cbd5e1;">{{ opp.technical_complexity }}</strong></span>
+                <span>Effort: <strong style="color: #cbd5e1;">{{ opp.estimated_effort_weeks }}</strong></span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Progressive Lead Gating Callout -->
+    <div class="lead-gate-box" x-show="!showUnlock">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-3);">
+            <div>
+                <h3 style="font-size: 1.15rem; font-weight: 700; color: #ffffff; margin-bottom: 4px;">
+                    Want the full 18-section architectural blueprint and budget sizing?
+                </h3>
+                <p style="font-size: 0.875rem; color: #94a3b8;">
+                    Progressive reveal: Enter your work contact details to immediately reveal the complete engineering specification, API integration models, and confidence-banded indicative estimates.
+                </p>
+            </div>
+            <button type="button" 
+                    class="btn btn-primary" 
+                    id="btn-reveal-unlock-form"
+                    @click="showUnlock = true; $nextTick(() => { document.getElementById('full_name')?.focus(); document.getElementById('lead-unlock-container')?.scrollIntoView({ behavior: 'smooth' }); })">
+                <span>Unlock Full Solution Blueprint &amp; Estimates</span>
+                <span class="cta-arrow" aria-hidden="true">&rarr;</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Embedded Lead Capture Form (Revealed when clicked) -->
+    <div class="lead-gate-box" id="lead-unlock-container" x-show="showUnlock" x-cloak style="margin-top: var(--space-6);">
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--color-text-primary); margin-bottom: var(--space-2);">
+            Where should we send your full blueprint?
+        </h3>
+        <p style="font-size: 0.925rem; color: var(--color-text-secondary); margin-bottom: var(--space-6);">
+            Instant unlock: Providing your corporate work email immediately reveals the 18-section specification and indicative planning budget on screen.
+        </p>
+
+        <form hx-post="/discovery/unlock" 
+              hx-target="#discovery-viewport" 
+              hx-swap="innerHTML transition:true"
+              hx-indicator="#discovery-loading">
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-4);">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="full_name" class="input-label">Full Name *</label>
+                    <input type="text" id="full_name" name="full_name" class="form-input" required placeholder="e.g. Sarah Jenkins" minlength="2">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="corporate_email" class="input-label">Corporate / Work Email *</label>
+                    <input type="email" id="corporate_email" name="corporate_email" class="form-input" required placeholder="e.g. sarah@company.com">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="company_name" class="input-label">Company Name (Optional)</label>
+                    <input type="text" id="company_name" name="company_name" class="form-input" placeholder="e.g. Acme Logistics Global">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="phone_number" class="input-label">Phone / WhatsApp (Optional)</label>
+                    <input type="tel" id="phone_number" name="phone_number" class="form-input" placeholder="e.g. +1 555-0199">
+                </div>
+            </div>
+
+            <div class="checkbox-row">
+                <input type="checkbox" id="consent_given" name="consent_given" value="true" required>
+                <label for="consent_given" class="checkbox-label">
+                    I consent to [STUDIO_NAME] processing my project information to deliver the Solution Blueprint and allow human senior architect follow-up (BD-014).
+                </label>
+            </div>
+
+            <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-top: var(--space-3);">
+                🛡️ <strong>Zero Spam Guarantee:</strong> No automated email drip sequences, no phone harassment, and zero third-party marketing sharing.
+            </p>
+
+            <div class="btn-row">
+                <button type="button" class="btn btn-ghost" @click="showUnlock = false">&larr; Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btn-submit-unlock">
+                    <span>Unlock Full Blueprint &amp; Indicative Estimates</span>
+                    <span aria-hidden="true">&rarr;</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="btn-row" style="margin-top: var(--space-6);" x-show="!showUnlock">
+        <button type="button" 
+                class="btn btn-secondary" 
+                hx-post="/discovery/backtrack" 
+                hx-vals='{"target_stage": "questions"}'
+                hx-target="#discovery-viewport" 
+                hx-swap="innerHTML transition:true"
+                hx-indicator="#discovery-loading">
+            &larr; Refine Clarification Answers
+        </button>
+        <button type="button" 
+                class="btn btn-primary" 
+                id="btn-reveal-unlock-bottom"
+                @click="showUnlock = true; $nextTick(() => { document.getElementById('full_name')?.focus(); document.getElementById('lead-unlock-container')?.scrollIntoView({ behavior: 'smooth' }); })">
+            <span>Unlock Full Solution Blueprint &rarr;</span>
+        </button>
+    </div>
+</div>

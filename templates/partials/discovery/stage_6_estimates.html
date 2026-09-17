@@ -1,0 +1,105 @@
+<div class="discovery-surface" id="stage-6-estimates" style="margin-top: var(--space-8);" x-data="{ currency: 'INR' }">
+    <div class="estimates-header-row">
+        <div>
+            <span class="discovery-eyebrow" style="margin-bottom: 4px;">Planning Parameters</span>
+            <h2 class="discovery-hero-heading" style="font-size: clamp(1.4rem, 2.5vw, 1.85rem); margin-bottom: 4px;">
+                Indicative Planning Parameters
+            </h2>
+            <p class="discovery-hero-sub" style="font-size: 0.9rem; margin-bottom: 0;">
+                Empirical sizing bands based on scope complexity, integration points, and flagged unknowns.
+            </p>
+        </div>
+
+        <!-- Currency Selector (Strictly Presentation Only) -->
+        <div class="currency-toggle-group" role="group" aria-label="Currency display selection">
+            <button type="button" 
+                    class="currency-btn" 
+                    :class="{ 'active': currency === 'INR' }"
+                    @click="currency = 'INR'"
+                    aria-label="Display in Indian Rupees">
+                INR (₹)
+            </button>
+            <button type="button" 
+                    class="currency-btn" 
+                    :class="{ 'active': currency === 'USD' }"
+                    @click="currency = 'USD'"
+                    aria-label="Display in US Dollars">
+                USD ($)
+            </button>
+        </div>
+    </div>
+
+    <!-- Sizing Metric Cards Grid -->
+    <div class="estimate-metrics-grid">
+        <div class="metric-card">
+            <div class="metric-label">Indicative Budget Band</div>
+            <div class="metric-value">
+                <span x-show="currency === 'INR'">{{ estimate.budget_range_inr }}</span>
+                <span x-show="currency === 'USD'" x-cloak>{{ estimate.budget_range_usd }}</span>
+            </div>
+            <div class="metric-sub">Tailored engineering investment</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-label">Estimated Timeline</div>
+            <div class="metric-value">{{ estimate.timeline_weeks }}</div>
+            <div class="metric-sub">Production deployment horizon</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-label">Confidence Rating</div>
+            <div class="metric-value" style="color: {% if estimate.confidence == 'HIGH' %}#34d399{% elif estimate.confidence == 'MEDIUM' %}#38bdf8{% else %}#fbbf24{% endif %};">
+                {{ estimate.confidence }}
+            </div>
+            <div class="metric-sub">Based on input completeness</div>
+        </div>
+    </div>
+
+    <!-- Verbatim Legal Disclaimer Notice (BD-006) -->
+    <div class="mandatory-disclaimer-alert" role="note" aria-label="Legal disclaimer">
+        <div class="disclaimer-title">⚠️ IMPORTANT NOTICE — NON-BINDING ESTIMATE (BD-006)</div>
+        <p style="margin: 0; line-height: 1.55; color: #cbd5e1;">{{ estimate.mandatory_disclaimer }}</p>
+    </div>
+
+    <!-- Stage 7 Human Handoff Bridge Section -->
+    <div style="margin-top: var(--space-8); padding-top: var(--space-6); border-top: 1px solid rgba(255, 255, 255, 0.08);">
+        <span class="discovery-eyebrow">Human Architecture Review</span>
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #f1f5f9; margin-bottom: var(--space-2);">
+            Transition to Senior Human Architect
+        </h3>
+        <p class="discovery-hero-sub" style="font-size: 0.9rem; margin-bottom: var(--space-4);">
+            Our operating doctrine: <em>"AI handles leverage. Humans handle judgement."</em> (BD-010). Submit this preliminary diagnostic dossier to our senior architecture review board for complimentary technical validation within 1 business day.
+        </p>
+
+        <form hx-post="/discovery/review" 
+              hx-target="#discovery-viewport" 
+              hx-swap="innerHTML transition:true"
+              hx-indicator="#discovery-loading">
+            
+            <div class="form-group">
+                <label for="review-notes" class="input-label">Additional Architect Notes / Constraints (Optional)</label>
+                <textarea id="review-notes" 
+                          name="notes" 
+                          class="form-input" 
+                          style="min-height: 80px; resize: vertical;" 
+                          placeholder="e.g. Please verify on-premise firewall rules or existing ERP webhook throughput limits..."></textarea>
+            </div>
+
+            <div class="btn-row" style="margin-top: var(--space-4);">
+                <button type="button" 
+                        class="btn btn-secondary" 
+                        hx-post="/discovery/backtrack" 
+                        hx-vals='{"target_stage": "opportunity_map"}'
+                        hx-target="#discovery-viewport" 
+                        hx-swap="innerHTML transition:true"
+                        hx-indicator="#discovery-loading">
+                    &larr; Back to Opportunity Map
+                </button>
+                <button type="submit" class="btn btn-primary" id="btn-submit-review">
+                    <span>Request Senior Architect Review</span>
+                    <span class="cta-arrow" aria-hidden="true">&rarr;</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

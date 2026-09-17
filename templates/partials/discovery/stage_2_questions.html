@@ -1,0 +1,77 @@
+<div class="discovery-surface" id="stage-2-surface">
+    <!-- Out-of-band stepper update -->
+    {% if not is_full_page %}
+    {% set is_oob = true %}
+    {% set current_step = 2 %}
+    {% set step_percentage = "28%" %}
+    {% set step_title = "Operational Context" %}
+    {% include "partials/discovery/stepper.html" %}
+    {% endif %}
+
+    <span class="discovery-eyebrow">Operational Context</span>
+    <h1 class="discovery-hero-heading" style="font-size: clamp(1.6rem, 3vw, 2.1rem);">A few quick questions to narrow scope</h1>
+    <p class="discovery-hero-sub" style="margin-bottom: var(--space-6);">
+        We ask only what is necessary to accurately size your technology options and evaluate architectural feasibility.
+    </p>
+
+    <form hx-post="/discovery/answers" 
+          hx-target="#discovery-viewport" 
+          hx-swap="innerHTML transition:true"
+          hx-indicator="#discovery-loading">
+
+        <div class="questions-list">
+            {% for q in questions %}
+            {% set q_id = q.question_id or q.id or ('q' ~ loop.index) %}
+            {% set q_title = q.prompt or q.question or ('Question ' ~ loop.index) %}
+            <div class="question-block" id="q-block-{{ q_id }}" x-data="{ selected: '' }">
+                <div class="question-title">
+                    <span class="question-index">Q{{ loop.index }}</span>
+                    <span>{{ q_title }}</span>
+                </div>
+                {% if q.rationale %}
+                <p style="font-size: 0.825rem; color: #94a3b8; margin-bottom: var(--space-3);">
+                    <em>Why we ask:</em> {{ q.rationale }}
+                </p>
+                {% endif %}
+
+                <div class="radio-cards-grid" role="radiogroup" aria-label="{{ q_title }}">
+                    {% for opt in q.options %}
+                    <label class="radio-card" 
+                           :class="{ 'is-selected': selected === '{{ opt|escape }}' }"
+                           for="opt-{{ q_id }}-{{ loop.index }}">
+                        <input type="radio" 
+                               id="opt-{{ q_id }}-{{ loop.index }}"
+                               name="{{ q_id }}" 
+                               value="{{ opt }}" 
+                               x-model="selected"
+                               required>
+                        <span class="custom-radio-indicator" aria-hidden="true">
+                            <span class="radio-dot" x-cloak x-show="selected === '{{ opt|escape }}'"></span>
+                        </span>
+                        <div class="radio-card-content">
+                            <span class="radio-card-title">{{ opt }}</span>
+                        </div>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="btn-row">
+            <button type="button" 
+                    class="btn btn-secondary" 
+                    hx-post="/discovery/backtrack" 
+                    hx-vals='{"target_stage": "problem"}'
+                    hx-target="#discovery-viewport" 
+                    hx-swap="innerHTML transition:true"
+                    hx-indicator="#discovery-loading">
+                &larr; Back to Problem Description
+            </button>
+            <button type="submit" class="btn btn-primary" id="btn-submit-answers">
+                <span>Continue</span>
+                <span class="cta-arrow" aria-hidden="true">&rarr;</span>
+            </button>
+        </div>
+    </form>
+</div>

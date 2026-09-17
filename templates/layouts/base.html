@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}[STUDIO_NAME] — Technology Studio{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}We turn business problems into technology. AI-native Technology Studio.{% endblock %}">
+    <link rel="canonical" href="{{ request.url }}">
+
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="{% block og_title %}[STUDIO_NAME] — Technology Studio{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}We turn business problems into technology. AI-native Technology Studio.{% endblock %}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url }}">
+    
+    <!-- Design System CSS Tokens -->
+    <link rel="stylesheet" href="/static/css/main.css">
+
+    
+    <!-- Vendored Static JS Libraries (Zero Build Toolchain) -->
+    <script src="/static/vendor/htmx.min.js"></script>
+    <script defer src="/static/vendor/alpine.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Configure HTMX to swap 4xx status code responses (e.g. 422 validation error partials)
+            document.body.addEventListener('htmx:beforeSwap', function (evt) {
+                if (evt.detail.xhr.status === 422 || evt.detail.xhr.status === 400 || evt.detail.xhr.status === 409) {
+                    evt.detail.shouldSwap = true;
+                    evt.detail.isError = false;
+                }
+            });
+
+            // Safely initialize Alpine reactivity on swapped DOM elements
+            document.body.addEventListener('htmx:afterSwap', function (evt) {
+                if (window.Alpine && typeof window.Alpine.initTree === 'function' && evt.detail && evt.detail.target) {
+                    window.Alpine.initTree(evt.detail.target);
+                }
+            });
+        });
+    </script>
+    
+    {% block head %}{% endblock %}
+</head>
+<body class="studio-body" x-data="{ mobileOpen: false, dropdownOpen: false }" @keydown.escape="dropdownOpen = false; mobileOpen = false">
+    <!-- Accessibility: Skip to Main Content (WCAG 2.1 AA) -->
+    <a href="#main-content" class="skip-link">Skip to Main Content</a>
+
+    <header class="studio-header" role="banner">
+        <nav class="nav-container" role="navigation" aria-label="Primary Navigation">
+            <a href="/" class="brand-logo" aria-label="[STUDIO_NAME] Home">
+                <span class="brand-dot" aria-hidden="true"></span>
+                [STUDIO_NAME]
+            </a>
+            
+            <div class="nav-desktop-links">
+                <!-- Dropdown Menu for Capability Pillars -->
+                <div class="nav-dropdown" @mouseleave="dropdownOpen = false" @focusout="if (!$el.contains($event.relatedTarget)) dropdownOpen = false">
+                    <button type="button" class="nav-link nav-dropdown-trigger" 
+                            @click="dropdownOpen = !dropdownOpen" 
+                            :aria-expanded="dropdownOpen"
+                            aria-haspopup="true"
+                            id="nav-what-we-build-trigger">
+                        <span>What We Build</span>
+                        <svg class="dropdown-chevron" :class="{ 'rotate': dropdownOpen }" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                            <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <div class="dropdown-menu" x-show="dropdownOpen" x-transition.opacity.duration.150ms aria-labelledby="nav-what-we-build-trigger" x-cloak>
+                        <div class="dropdown-header">CAPABILITY PILLARS</div>
+                        <a href="/services/software" class="dropdown-item" @click="dropdownOpen = false">
+                            <div class="dropdown-item-title">Software &amp; Websites</div>
+                            <div class="dropdown-item-desc">Business websites, web apps, internal tools &amp; custom software</div>
+                        </a>
+                        <a href="/services/ai" class="dropdown-item" @click="dropdownOpen = false">
+                            <div class="dropdown-item-title">AI Solutions</div>
+                            <div class="dropdown-item-desc">AI-powered workflows, assistants &amp; knowledge systems</div>
+                        </a>
+                        <a href="/services/automation" class="dropdown-item" @click="dropdownOpen = false">
+                            <div class="dropdown-item-title">Automation</div>
+                            <div class="dropdown-item-desc">Reliable automated processes replacing repetitive manual work</div>
+                        </a>
+                        <a href="/services/integrations" class="dropdown-item" @click="dropdownOpen = false">
+                            <div class="dropdown-item-title">Integrations</div>
+                            <div class="dropdown-item-desc">Connecting existing tools, APIs &amp; business systems</div>
+                        </a>
+                        <a href="/services/scale" class="dropdown-item" @click="dropdownOpen = false">
+                            <div class="dropdown-item-title">Scale &amp; Improve</div>
+                            <div class="dropdown-item-desc">Optimizing &amp; scaling existing software as your business grows</div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="/solutions" class="dropdown-item" @click="dropdownOpen = false">
+                            <div class="dropdown-item-title">Solution Blueprints</div>
+                            <div class="dropdown-item-desc">Outcome-driven maps translating problems to technology</div>
+                        </a>
+                        <a href="/services" class="dropdown-item dropdown-footer-link" @click="dropdownOpen = false">
+                            <span>Explore All 5 Pillars &rarr;</span>
+                        </a>
+                    </div>
+                </div>
+
+                <a href="/how-we-work" class="nav-link">How We Work</a>
+                <a href="/about" class="nav-link">About</a>
+                <a href="/contact" class="nav-link">Contact</a>
+            </div>
+
+            <div class="nav-actions">
+                <a href="/discovery" class="btn-nav-cta" id="nav-cta-discovery">
+                    <span>Start With Your Problem</span>
+                    <span aria-hidden="true">&rarr;</span>
+                </a>
+
+                <!-- Mobile Hamburger Button -->
+                <button type="button" class="btn-mobile-toggle" @click="mobileOpen = !mobileOpen" :aria-expanded="mobileOpen" aria-label="Toggle navigation menu">
+                    <svg x-show="!mobileOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <line x1="4" y1="6" x2="20" y2="6"/>
+                        <line x1="4" y1="12" x2="20" y2="12"/>
+                        <line x1="4" y1="18" x2="20" y2="18"/>
+                    </svg>
+                    <svg x-show="mobileOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" x-cloak aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Mobile Navigation Drawer -->
+        <div class="mobile-drawer" x-show="mobileOpen" x-transition.duration.200ms aria-label="Mobile Navigation" x-cloak>
+            <div class="mobile-drawer-inner">
+                <div class="mobile-nav-group">
+                    <div class="mobile-nav-header">WHAT WE BUILD</div>
+                    <a href="/services/software" class="mobile-nav-link" @click="mobileOpen = false">Software &amp; Websites</a>
+                    <a href="/services/ai" class="mobile-nav-link" @click="mobileOpen = false">AI Solutions</a>
+                    <a href="/services/automation" class="mobile-nav-link" @click="mobileOpen = false">Automation</a>
+                    <a href="/services/integrations" class="mobile-nav-link" @click="mobileOpen = false">Integrations</a>
+                    <a href="/services/scale" class="mobile-nav-link" @click="mobileOpen = false">Scale &amp; Improve</a>
+                    <a href="/solutions" class="mobile-nav-link" @click="mobileOpen = false">Solution Blueprints</a>
+                    <a href="/services" class="mobile-nav-link mobile-highlight" @click="mobileOpen = false">All Capability Pillars &rarr;</a>
+                </div>
+                <div class="mobile-nav-group">
+                    <div class="mobile-nav-header">STUDIO</div>
+                    <a href="/how-we-work" class="mobile-nav-link" @click="mobileOpen = false">How We Work</a>
+                    <a href="/about" class="mobile-nav-link" @click="mobileOpen = false">About Studio</a>
+                    <a href="/contact" class="mobile-nav-link" @click="mobileOpen = false">Contact Architects</a>
+                </div>
+                <div class="mobile-nav-cta-wrapper">
+                    <a href="/discovery" class="btn-primary w-full" @click="mobileOpen = false">
+                        Start With Your Problem &rarr;
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content" id="main-content" role="main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="studio-footer" role="contentinfo">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <!-- Column 1: Studio Identity -->
+                <div class="footer-col footer-col-brand">
+                    <div class="footer-brand-logo">[STUDIO_NAME]</div>
+                    <p class="footer-brand-desc">
+                        An AI-native technology studio building websites, custom software, AI systems, automations, and integrations — designed around your business.
+                    </p>
+                    <p class="footer-target">
+                        Typical internal target: response within 1 business day.
+                    </p>
+                </div>
+
+                <!-- Column 2: What We Build -->
+                <div class="footer-col">
+                    <div class="footer-heading">What We Build</div>
+                    <ul class="footer-links">
+                        <li><a href="/services/software">Software &amp; Websites</a></li>
+                        <li><a href="/services/ai">AI Solutions</a></li>
+                        <li><a href="/services/automation">Automation</a></li>
+                        <li><a href="/services/integrations">Integrations</a></li>
+                        <li><a href="/services/scale">Scale &amp; Improve</a></li>
+                        <li><a href="/solutions">Solution Blueprints</a></li>
+                        <li><a href="/services">View All Pillars</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Studio & Methodology -->
+                <div class="footer-col">
+                    <div class="footer-heading">Studio</div>
+                    <ul class="footer-links">
+                        <li><a href="/how-we-work">Methodology & Principles</a></li>
+                        <li><a href="/about">About Studio</a></li>
+                        <li><a href="/contact">Contact Architects</a></li>
+                        <li><a href="/discovery">Start Interactive Discovery</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 4: Trust & Legal -->
+                <div class="footer-col">
+                    <div class="footer-heading">Trust & Legal</div>
+                    <ul class="footer-links">
+                        <li><a href="/privacy">Privacy Policy</a></li>
+                        <li><a href="/terms">Terms of Service</a></li>
+                        <li><a href="/security">Security & Governance</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-baseline">
+                <div class="footer-copyright">
+                    &copy; 2026 [STUDIO_NAME]. All rights reserved. Non-production placeholder identity for project owner review.
+                </div>
+                <div class="footer-disclaimer">
+                    Indicative planning range only. Non-binding budgetary estimates.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

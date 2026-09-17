@@ -1,0 +1,15 @@
+<div class="discovery-header" id="discovery-progress-header" role="region" aria-label="Discovery Progress"{% if is_oob %} hx-swap-oob="true"{% endif %}>
+    <div class="discovery-progress-meta">
+        <div>
+            <span class="sr-only">Step {{ current_step|default(1) }} of 7 &bull; </span>
+            <span class="discovery-progress-step">{{ "%02d" % current_step|default(1) }} / 07</span>
+            <span style="color: rgba(255, 255, 255, 0.2); margin: 0 8px;">&bull;</span>
+            <span style="color: #f1f5f9; font-weight: 600;">{{ step_title|default("Business Problem") }}</span>
+        </div>
+        <span style="font-size: 0.8rem; color: #94a3b8;">{{ step_percentage|default("14%") }} Completed</span>
+    </div>
+    
+    <div class="discovery-progress-track" role="progressbar" aria-valuenow="{{ current_step|default(1) }}" aria-valuemin="1" aria-valuemax="7" aria-label="Step {{ current_step|default(1) }} of 7">
+        <div class="discovery-progress-bar" style="width: {{ step_percentage|default('14%') }};"></div>
+    </div>
+</div>

@@ -1,0 +1,170 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block meta_description %}Outcome-driven solution blueprints mapping common enterprise operational bottlenecks to bespoke software, AI, automation, integration, and scaling architectures.{% endblock %}
+
+{% block content %}
+<section class="public-page-header">
+    <div class="public-container">
+        <div class="page-eyebrow">SOLUTION BLUEPRINTS</div>
+        <h1 class="public-page-title">Outcome-Driven Solutions</h1>
+        <p class="public-page-subtitle">
+            Translate your operational bottlenecks into pre-validated technical architectures and clear business outcomes.
+        </p>
+    </div>
+</section>
+
+<section class="section-padded">
+    <div class="public-container">
+        <div class="section-header text-center max-w-3xl mb-12">
+            <div class="section-eyebrow">PROBLEM-TO-SOLUTION MAP</div>
+            <h2 class="section-title">Common Business Bottlenecks &amp; Technical Blueprints</h2>
+            <p class="section-subtitle">
+                Explore how core operational challenges map to specialized technical capabilities.
+            </p>
+        </div>
+
+        <div class="solutions-grid">
+            <!-- Solution Blueprint 1: Custom Web Apps & Portals -->
+            <div class="spotlight-card mb-8">
+                <div class="card-badge">SOFTWARE &amp; WEBSITES</div>
+                <h3 class="spotlight-title">Legacy Process &amp; Spreadsheets Impairing Operations</h3>
+                <p class="spotlight-desc">
+                    Critical operational data is trapped in disconnected spreadsheets, generic SaaS workarounds, or legacy desktop software, causing data entry errors and manual overhead.
+                </p>
+                <div class="blueprint-summary mt-4">
+                    <div class="text-sm font-semibold color-accent mb-2">Technical Solution Architecture:</div>
+                    <ul class="capabilities-list text-sm color-muted">
+                        <li>Bespoke operational portal with role-based access control (RBAC)</li>
+                        <li>Domain-driven relational database schema design (SQL Server)</li>
+                        <li>Automated business logic validation and audit trail logging</li>
+                    </ul>
+                </div>
+                <div class="card-footer-action mt-6">
+                    <a href="/services/software" class="btn-secondary">
+                        <span>Explore Software Pillar</span> &rarr;
+                    </a>
+                    <a href="/discovery" class="btn-text-link">
+                        <span>Start Discovery for This Solution</span> &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- Solution Blueprint 2: Enterprise AI Workflows & RAG -->
+            <div class="spotlight-card mb-8">
+                <div class="card-badge">AI SOLUTIONS</div>
+                <h3 class="spotlight-title">Unstructured Knowledge &amp; Document Bottlenecks</h3>
+                <p class="spotlight-desc">
+                    Teams spend hours searching through unstructured PDFs, contracts, and internal documentation, or manually categorizing incoming customer inquiries.
+                </p>
+                <div class="blueprint-summary mt-4">
+                    <div class="text-sm font-semibold color-accent mb-2">Technical Solution Architecture:</div>
+                    <ul class="capabilities-list text-sm color-muted">
+                        <li>Domain-grounded Knowledge Retrieval System (RAG with vector indexing)</li>
+                        <li>Provider-neutral AI gateway with automated pre-transit PII scrubbing</li>
+                        <li>Custom AI assistants with strict deterministic output verification</li>
+                    </ul>
+                </div>
+                <div class="card-footer-action mt-6">
+                    <a href="/services/ai" class="btn-secondary">
+                        <span>Explore AI Pillar</span> &rarr;
+                    </a>
+                    <a href="/discovery" class="btn-text-link">
+                        <span>Start Discovery for This Solution</span> &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- Solution Blueprint 3: Process Automation -->
+            <div class="spotlight-card mb-8">
+                <div class="card-badge">AUTOMATION</div>
+                <h3 class="spotlight-title">High-Volume Repetitive Manual Operations</h3>
+                <p class="spotlight-desc">
+                    Employees execute repetitive manual tasks—copy-pasting data between systems, processing invoices, or generating reports—wasting valuable time and introducing errors.
+                </p>
+                <div class="blueprint-summary mt-4">
+                    <div class="text-sm font-semibold color-accent mb-2">Technical Solution Architecture:</div>
+                    <ul class="capabilities-list text-sm color-muted">
+                        <li>Event-driven asynchronous workflow queues with retry &amp; dead-letter handlers</li>
+                        <li>Automated document extraction and parsing pipelines</li>
+                        <li>Human-in-the-loop exception handling interface for edge cases</li>
+                    </ul>
+                </div>
+                <div class="card-footer-action mt-6">
+                    <a href="/services/automation" class="btn-secondary">
+                        <span>Explore Automation Pillar</span> &rarr;
+                    </a>
+                    <a href="/discovery" class="btn-text-link">
+                        <span>Start Discovery for This Solution</span> &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- Solution Blueprint 4: System Integrations -->
+            <div class="spotlight-card mb-8">
+                <div class="card-badge">INTEGRATIONS</div>
+                <h3 class="spotlight-title">Siloed Software Systems &amp; Disconnected APIs</h3>
+                <p class="spotlight-desc">
+                    SaaS applications, internal ERP/CRM databases, and third-party vendor APIs do not communicate smoothly, leading to fragmented reporting and delayed synchronization.
+                </p>
+                <div class="blueprint-summary mt-4">
+                    <div class="text-sm font-semibold color-accent mb-2">Technical Solution Architecture:</div>
+                    <ul class="capabilities-list text-sm color-muted">
+                        <li>RESTful &amp; GraphQL API Gateway with OAuth2 enterprise security</li>
+                        <li>Bidirectional webhook listeners and data mapping pipelines</li>
+                        <li>Real-time synchronization engine with connection health monitoring</li>
+                    </ul>
+                </div>
+                <div class="card-footer-action mt-6">
+                    <a href="/services/integrations" class="btn-secondary">
+                        <span>Explore Integrations Pillar</span> &rarr;
+                    </a>
+                    <a href="/discovery" class="btn-text-link">
+                        <span>Start Discovery for This Solution</span> &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- Solution Blueprint 5: Scale & Modernization -->
+            <div class="spotlight-card mb-8">
+                <div class="card-badge">SCALE &amp; IMPROVE</div>
+                <h3 class="spotlight-title">Performance Degradation &amp; Technical Debt at Scale</h3>
+                <p class="spotlight-desc">
+                    Existing systems experience slow page loads, database query timeouts, or stability issues as transaction volumes and user traffic grow.
+                </p>
+                <div class="blueprint-summary mt-4">
+                    <div class="text-sm font-semibold color-accent mb-2">Technical Solution Architecture:</div>
+                    <ul class="capabilities-list text-sm color-muted">
+                        <li>Database query optimization, index tuning, and connection pooling</li>
+                        <li>Modular micro-refactoring to decouple monolithic bottlenecks</li>
+                        <li>Containerized cloud infrastructure scaling &amp; load balancing</li>
+                    </ul>
+                </div>
+                <div class="card-footer-action mt-6">
+                    <a href="/services/scale" class="btn-secondary">
+                        <span>Explore Scale Pillar</span> &rarr;
+                    </a>
+                    <a href="/discovery" class="btn-text-link">
+                        <span>Start Discovery for This Solution</span> &rarr;
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Bottom CTA Banner -->
+<section class="section-padded bg-surface-alt text-center">
+    <div class="public-container max-w-3xl">
+        <h2 class="section-title">Have a Specific Business Challenge?</h2>
+        <p class="section-subtitle">
+            Our interactive discovery engine will analyze your operational bottlenecks, map the required architecture, and calculate a non-binding budgetary estimate.
+        </p>
+        <div class="mt-6">
+            <a href="/discovery" class="btn-hero-primary">
+                <span>Start With Your Problem</span> &rarr;
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

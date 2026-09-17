@@ -1,0 +1,43 @@
+<div class="synthesis-panel" id="synthesis-panel" style="margin-bottom: var(--space-6);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+        <span class="discovery-eyebrow" style="margin-bottom: 0;">Structured Problem Understanding</span>
+        <span class="badge-tag" style="background: rgba(99, 102, 241, 0.12); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.25); font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; margin-bottom: 0;">
+            Complexity: {{ structured_context.complexity_tier|default("MEDIUM") }}
+        </span>
+    </div>
+
+    <div class="synthesis-grid">
+        <div class="synthesis-card">
+            <span class="synthesis-card-header">Core Operational Challenge</span>
+            <div class="synthesis-card-val">
+                {{ structured_context.core_challenge|default("Business process bottleneck and manual workflow friction") }}
+            </div>
+        </div>
+
+        <div class="synthesis-card">
+            <span class="synthesis-card-header">Impacted Business Workflows</span>
+            <div class="synthesis-card-val">
+                {% if structured_context.impacted_workflows %}
+                    {% for wf in structured_context.impacted_workflows %}
+                        <span style="display: inline-block; background: rgba(255,255,255,0.06); padding: 3px 8px; border-radius: 4px; margin-right: 4px; margin-bottom: 4px; font-size: 0.85rem;">{{ wf }}</span>
+                    {% endfor %}
+                {% else %}
+                    <span style="font-size: 0.85rem;">Operations, Reporting &amp; Data Dispatch</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if structured_context.flagged_unknowns and structured_context.flagged_unknowns|length > 0 %}
+    <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.18); border-radius: 8px; padding: 12px 16px;">
+        <span style="font-size: 0.75rem; font-weight: 700; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.06em; display: block; margin-bottom: 6px;">
+            ⚠️ Key Architecture Unknowns Flagged for Sizing:
+        </span>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            {% for unk in structured_context.flagged_unknowns %}
+                <span class="unknown-item">{{ unk }}</span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>

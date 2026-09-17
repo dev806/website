@@ -1,0 +1,94 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="public-page-header">
+    <div class="public-container">
+        <div class="page-eyebrow">ABOUT STUDIO</div>
+        <h1 class="public-page-title">Engineered for Business Impact</h1>
+        <p class="public-page-subtitle">
+            An AI-native technology studio combining senior software engineering precision with rapid architectural synthesis.
+        </p>
+    </div>
+</section>
+
+<section class="section-padded">
+    <div class="public-container max-w-4xl">
+        <div class="about-grid">
+            <div class="about-card">
+                <h2 class="about-heading">Our Studio Identity</h2>
+                <p class="about-text">
+                    [STUDIO_NAME] is a elite technology studio established to solve a persistent industry problem: the gap between business reality and software engineering. Too often, software projects suffer from scope creep, bloated frameworks, and misalignment with actual business goals.
+                </p>
+                <p class="about-text">
+                    We bridge this gap through product-led AI discovery and senior engineering execution. We build custom software, AI infrastructure, enterprise automation, and cloud systems that deliver measurable business results.
+                </p>
+            </div>
+
+            <div class="about-card mt-8">
+                <h2 class="about-heading">Core Technical Ethos</h2>
+                <div class="ethos-values-grid">
+                    <div class="value-item">
+                        <div class="value-icon">🎯</div>
+                        <h3 class="value-title">Zero Bloat</h3>
+                        <p class="value-desc">
+                            We write clean, purposeful code. We don't introduce heavy frameworks or complex dependencies unless explicitly required by business outcomes.
+                        </p>
+                    </div>
+
+                    <div class="value-item">
+                        <div class="value-icon">🔒</div>
+                        <h3 class="value-title">Privacy &amp; Security First</h3>
+                        <p class="value-desc">
+                            Pre-transit PII sanitization, provider-neutral gateways, and strict credential isolation are built into every solution from day one.
+                        </p>
+                    </div>
+
+                    <div class="value-item">
+                        <div class="value-icon">🛠️</div>
+                        <h3 class="value-title">Bespoke Precision</h3>
+                        <p class="value-desc">
+                            No cookie-cutter templates. Every system architecture is tailored specifically to your operational data models and workflow requirements.
+                        </p>
+                    </div>
+
+                    <div class="value-item">
+                        <div class="value-icon">⚡</div>
+                        <h3 class="value-title">Empirical Quality</h3>
+                        <p class="value-desc">
+                            We verify system performance with automated unit, integration, and load test suites before claiming success.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="about-card mt-8">
+                <h2 class="about-heading">Leadership &amp; Governance</h2>
+                <p class="about-text">
+                    Our team consists of senior software architects, systems engineers, and AI gateway specialists with deep domain experience in enterprise software, cloud infrastructure, and data pipeline design.
+                </p>
+                <div class="governance-box mt-4">
+                    <div class="governance-tag font-semibold">Typical Internal SLA Target</div>
+                    <p class="governance-text text-sm color-muted">
+                        Target response within 1 business day for all architect advisory inquiries and discovery reviews. (Indicative internal target; non-contractual).
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-banner mt-12 text-center">
+            <h3 class="cta-banner-title">Work With Senior Architects</h3>
+            <p class="cta-banner-desc">Ready to discuss your technology initiatives?</p>
+            <div class="mt-4 flex-center gap-4">
+                <a href="/discovery" class="btn-hero-primary">
+                    <span>Start With Your Problem</span> &rarr;
+                </a>
+                <a href="/contact" class="btn-hero-secondary">
+                    <span>Contact Architects</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

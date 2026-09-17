@@ -1,0 +1,115 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="public-page-header">
+    <div class="public-container">
+        <div class="page-eyebrow">METHODOLOGY &amp; PRINCIPLES</div>
+        <h1 class="public-page-title">How We Work</h1>
+        <p class="public-page-subtitle">
+            Our engineering process, architectural governance, and Human+AI collaboration principles.
+        </p>
+    </div>
+</section>
+
+<section class="section-padded">
+    <div class="public-container max-w-4xl">
+        <!-- North Star -->
+        <div class="methodology-card mb-10">
+            <div class="methodology-badge">NORTH STAR</div>
+            <h2 class="methodology-title">Technology Exists to Solve Business Problems</h2>
+            <p class="methodology-text">
+                We believe that software engineering should never be an exercise in vanity or speculative complexity. Every architecture we design, line of code we write, and AI component we deploy must directly serve operational velocity, risk mitigation, or commercial outcomes.
+            </p>
+        </div>
+
+        <!-- Human + AI Law -->
+        <div class="methodology-card mb-10 border-accent">
+            <div class="methodology-badge">COLLABORATION LAW</div>
+            <h2 class="methodology-title">Human+AI Collaboration Principle</h2>
+            <p class="methodology-text">
+                AI handles speed, synthesis, pattern extraction, and initial code structure. Humans handle critical domain judgement, edge-case analysis, security verification, and executive accountability.
+            </p>
+            <div class="symbiosis-grid mt-6">
+                <div class="symbiosis-col">
+                    <div class="symbiosis-header">🤖 What AI Does</div>
+                    <ul class="symbiosis-list">
+                        <li>Rapid problem intake &amp; taxonomy classification</li>
+                        <li>Automated pre-transit PII sanitization</li>
+                        <li>Draft blueprint &amp; architecture synthesis</li>
+                        <li>Initial test suite generation</li>
+                    </ul>
+                </div>
+                <div class="symbiosis-col">
+                    <div class="symbiosis-header">👨‍💻 What Humans Do</div>
+                    <ul class="symbiosis-list">
+                        <li>Domain business context validation</li>
+                        <li>Security &amp; compliance code audit</li>
+                        <li>Complex trade-off resolution</li>
+                        <li>Production deployment sign-off</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4-Phase Delivery Framework -->
+        <div class="section-header">
+            <div class="section-eyebrow">DELIVERY FRAMEWORK</div>
+            <h2 class="section-title">The 4-Phase Lifecycle</h2>
+        </div>
+
+        <div class="lifecycle-steps mt-6">
+            <div class="lifecycle-step">
+                <div class="step-num">01</div>
+                <div class="step-body">
+                    <h3 class="step-name">Interactive Problem Intake &amp; Discovery</h3>
+                    <p class="step-desc">
+                        You submit your operational problem in natural language. Our discovery engine scrubs PII, asks targeted clarifying questions, and synthesizes an executive opportunity map.
+                    </p>
+                </div>
+            </div>
+
+            <div class="lifecycle-step">
+                <div class="step-num">02</div>
+                <div class="step-body">
+                    <h3 class="step-name">Architectural Blueprinting &amp; Estimation</h3>
+                    <p class="step-desc">
+                        We generate a complete system blueprint detailing core components, data models, integration protocols, and non-binding budgetary estimate ranges.
+                    </p>
+                </div>
+            </div>
+
+            <div class="lifecycle-step">
+                <div class="step-num">03</div>
+                <div class="step-body">
+                    <h3 class="step-name">Agile Production Engineering</h3>
+                    <p class="step-desc">
+                        Our senior engineering team builds the application in rapid, test-driven iterations. We maintain continuous integration, automated testing, and zero-bloat modularity.
+                    </p>
+                </div>
+            </div>
+
+            <div class="lifecycle-step">
+                <div class="step-num">04</div>
+                <div class="step-body">
+                    <h3 class="step-name">Production Hardening &amp; Handover</h3>
+                    <p class="step-desc">
+                        We perform security audits, load testing, and database query optimization before deploying to production cloud infrastructure with clean operational documentation.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-banner mt-12 text-center">
+            <h3 class="cta-banner-title">Experience Our Methodology in Action</h3>
+            <p class="cta-banner-desc">Start with Phase 1 interactive discovery right now.</p>
+            <div class="mt-4">
+                <a href="/discovery" class="btn-hero-primary">
+                    <span>Start With Your Problem</span> &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

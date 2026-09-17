@@ -1,0 +1,44 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}AI Project Discovery — [STUDIO_NAME]{% endblock %}
+
+{% block meta_description %}Interactive consultative discovery engine. Turn your business problem into an Opportunity Map, Solution Blueprint, and indicative budget in minutes.{% endblock %}
+
+{% block content %}
+<div class="discovery-container">
+    <!-- Accessible Screen Reader Live Region (WCAG 2.1 AA) -->
+    <div role="status" aria-live="polite" class="sr-only" id="discovery-live-announcer">
+        AI Project Discovery Engine active. Currently on Step {{ current_step|default(1) }} of 7: {{ step_title|default("Business Problem") }}.
+    </div>
+
+    <!-- Stepper Navigation Bar -->
+    {% include "partials/discovery/stepper.html" %}
+
+    <!-- Loading Shimmer (Active during HTMX Requests) -->
+    <div id="discovery-loading" class="htmx-indicator" style="margin-bottom: var(--space-6); justify-content: center;" aria-hidden="true">
+        <div class="discovery-surface" style="width: 100%; min-height: 240px; display: flex; flex-direction: column; gap: var(--space-4); justify-content: center;">
+            <div class="skeleton-pulse" style="width: 35%; height: 24px;"></div>
+            <div class="skeleton-pulse" style="width: 65%; height: 16px;"></div>
+            <div class="skeleton-pulse" style="width: 100%; height: 100px;"></div>
+        </div>
+    </div>
+
+    <!-- Main Dynamic Discovery Viewport Container -->
+    <div id="discovery-viewport" role="region" aria-label="Interactive Discovery Step Viewport">
+        {% if active_stage == "START" or active_stage == "PROBLEM_CAPTURED" %}
+            {% include "partials/discovery/stage_1_problem.html" %}
+        {% elif active_stage == "QUESTIONS_GENERATED" %}
+            {% include "partials/discovery/stage_2_questions.html" %}
+        {% elif active_stage == "OPPORTUNITY_MAP_GENERATED" or active_stage == "CLARIFICATIONS_ANSWERED" %}
+            {% include "partials/discovery/stage_4_opportunity_map.html" %}
+        {% elif active_stage == "BLUEPRINT_GENERATED" or active_stage == "ESTIMATE_GENERATED" %}
+            {% include "partials/discovery/stage_5_blueprint.html" %}
+            {% include "partials/discovery/stage_6_estimates.html" %}
+        {% elif active_stage == "HUMAN_REVIEW_REQUESTED" or active_stage == "COMPLETED" %}
+            {% include "partials/discovery/stage_7_handoff.html" %}
+        {% else %}
+            {% include "partials/discovery/stage_1_problem.html" %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

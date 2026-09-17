@@ -1,0 +1,84 @@
+<div class="discovery-surface" id="stage-1-surface" x-data="{ 
+    text: '{{ existing_text|default('', true)|escape }}',
+    get count() { return this.text.length; },
+    setStarter(val) { this.text = val; }
+}">
+    <!-- Eyebrow -->
+    <span class="discovery-eyebrow">Business Discovery</span>
+
+    <!-- Hero Heading -->
+    <h1 class="discovery-hero-heading">What's getting in the way of your business?</h1>
+
+    <!-- Supporting Text -->
+    <p class="discovery-hero-sub">
+        Explain what's slowing your team down, creating manual work, or limiting an opportunity. No technical language required.
+    </p>
+
+    <!-- Out-of-band stepper update (only sent during partial swaps, never on full page load) -->
+    {% if not is_full_page %}
+    {% set is_oob = true %}
+    {% set current_step = 1 %}
+    {% set step_percentage = "14%" %}
+    {% set step_title = "Business Problem" %}
+    {% include "partials/discovery/stepper.html" %}
+    {% endif %}
+
+    <form hx-post="/discovery/problem" 
+          hx-target="#discovery-viewport" 
+          hx-swap="innerHTML transition:true"
+          hx-indicator="#discovery-loading">
+        
+        <div class="form-group">
+            <label for="problem-input" class="input-label">Describe your core operational challenge</label>
+            <textarea 
+                id="problem-input" 
+                name="raw_text" 
+                class="discovery-textarea"
+                placeholder="e.g. Our operations team spends 4 hours every morning manually re-entering orders from WhatsApp into our legacy accounting software. Invoices get delayed and order dispatch is slowed down..."
+                x-model="text"
+                required
+                minlength="20"
+                maxlength="4000"
+                aria-describedby="char-hint confidentiality-hint"
+            ></textarea>
+            
+            <div class="textarea-footer">
+                <span id="char-hint">Recommended: 50–300 words</span>
+                <span class="char-counter" :class="{ 'valid': count >= 20 }">
+                    <span x-text="count">0</span> / 4,000 chars (min 20)
+                </span>
+            </div>
+        </div>
+
+        <div class="inspiration-container">
+            <span class="inspiration-label">Try starting with:</span>
+            <div class="chips-wrapper" role="group" aria-label="Problem description starters">
+                <button type="button" class="chip-btn" @click="setStarter('Our dispatch team spends 4 hours every morning copying carrier shipping manifests from incoming emails into our QuickBooks and legacy ERP.')">
+                    Invoice &amp; ERP Sync
+                </button>
+                <button type="button" class="chip-btn" @click="setStarter('We have a working prototype, but it cannot handle more than 50 concurrent customer requests without database timeouts.')">
+                    Scaling Bottleneck &amp; Timeouts
+                </button>
+                <button type="button" class="chip-btn" @click="setStarter('We want to automate customer document verification and contract data extraction using applied AI without data leaks.')">
+                    Document Automation &amp; Extraction
+                </button>
+                <button type="button" class="chip-btn" @click="setStarter('Our customer portal and field inventory database do not synchronize, leading to duplicate shipments.')">
+                    Inventory Systems Sync
+                </button>
+            </div>
+        </div>
+
+        <div class="privacy-reassurance" id="confidentiality-hint">
+            <span>🔒</span>
+            <span><strong>Confidentiality Guarantee:</strong> Inputs are scrubbed of PII and never used for public model training (BD-014).</span>
+        </div>
+
+        <div class="btn-row">
+            <a href="/" class="btn btn-ghost">&larr; Return to Overview</a>
+            <button type="submit" class="btn btn-primary" id="btn-submit-problem" :disabled="count < 20">
+                <span>Continue</span>
+                <span class="cta-arrow" aria-hidden="true">&rarr;</span>
+            </button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,121 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="public-page-header">
+    <div class="public-container">
+        <div class="page-eyebrow">DIRECT INQUIRY</div>
+        <h1 class="public-page-title">Contact Senior Architects</h1>
+        <p class="public-page-subtitle">
+            Discuss your technical requirements directly with our architectural team.
+        </p>
+    </div>
+</section>
+
+<section class="section-padded">
+    <div class="public-container max-w-3xl">
+        <div class="contact-card-container">
+            {% if submitted %}
+            <!-- SUCCESS STATE -->
+            <div class="contact-success-state" id="contact-success-message">
+                <div class="success-icon-badge">✓</div>
+                <h2 class="success-title">Inquiry Received Successfully</h2>
+                <p class="success-desc">
+                    Thank you for reaching out. Your project inquiry has been securely logged and assigned to a senior technical architect for review.
+                </p>
+                <div class="success-target-box">
+                    <strong>Typical Target:</strong> Response within 1 business day.
+                </div>
+                <div class="mt-8">
+                    <a href="/discovery" class="btn-hero-primary">
+                        <span>While You Wait: Start Interactive Discovery</span> &rarr;
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <!-- FORM STATE -->
+            <form action="/contact" method="POST" class="contact-form" 
+                  hx-post="/contact" hx-target="#main-content" hx-swap="innerHTML" id="contact-form">
+                
+                <div class="form-intro mb-6">
+                    <p class="text-sm color-muted">
+                        Fields marked with <span class="text-required">*</span> are required. Your input is protected by automated pre-transit PII sanitization.
+                    </p>
+                </div>
+
+                {% if errors.get('general') %}
+                <div class="form-error-alert mb-6" role="alert">
+                    {{ errors.get('general') }}
+                </div>
+                {% endif %}
+
+                <div class="form-group mb-5">
+                    <label for="full_name" class="form-label">Full Name <span class="text-required">*</span></label>
+                    <input type="text" id="full_name" name="full_name" 
+                           class="form-input {% if errors.get('full_name') %}input-error{% endif %}" 
+                           value="{{ form_data.get('full_name', '') }}" 
+                           placeholder="e.g. Sarah Jenkins" required aria-required="true">
+                    {% if errors.get('full_name') %}
+                    <span class="field-error-msg" role="alert">{{ errors.get('full_name') }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group mb-5">
+                    <label for="corporate_email" class="form-label">Corporate Email <span class="text-required">*</span></label>
+                    <input type="email" id="corporate_email" name="corporate_email" 
+                           class="form-input {% if errors.get('corporate_email') %}input-error{% endif %}" 
+                           value="{{ form_data.get('corporate_email', '') }}" 
+                           placeholder="e.g. s.jenkins@company.com" required aria-required="true">
+                    {% if errors.get('corporate_email') %}
+                    <span class="field-error-msg" role="alert">{{ errors.get('corporate_email') }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group mb-5">
+                    <label for="company_name" class="form-label">Company / Organization</label>
+                    <input type="text" id="company_name" name="company_name" 
+                           class="form-input" 
+                           value="{{ form_data.get('company_name', '') }}" 
+                           placeholder="e.g. Acme Enterprise Solutions">
+                </div>
+
+                <div class="form-group mb-5">
+                    <label for="project_scope" class="form-label">Primary Interest / Scope</label>
+                    <select id="project_scope" name="project_scope" class="form-select">
+                        <option value="Bespoke Software Architecture" {% if form_data.get('project_scope') == 'Bespoke Software Architecture' %}selected{% endif %}>Bespoke Software Engineering &amp; Architecture</option>
+                        <option value="AI Systems & Agents" {% if form_data.get('project_scope') == 'AI Systems & Agents' %}selected{% endif %}>AI Systems, Multi-Agent &amp; RAG Platforms</option>
+                        <option value="Enterprise Workflow Automation" {% if form_data.get('project_scope') == 'Enterprise Workflow Automation' %}selected{% endif %}>Enterprise Workflow Automation</option>
+                        <option value="Mission-Critical System Integrations" {% if form_data.get('project_scope') == 'Mission-Critical System Integrations' %}selected{% endif %}>Mission-Critical System Integrations</option>
+                        <option value="Cloud Infrastructure & Performance" {% if form_data.get('project_scope') == 'Cloud Infrastructure & Performance' %}selected{% endif %}>High-Scale Cloud Infrastructure &amp; Performance</option>
+                        <option value="General Architecture Inquiry" {% if form_data.get('project_scope') == 'General Architecture Inquiry' or not form_data.get('project_scope') %}selected{% endif %}>General Architecture Advisory</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-6">
+                    <label for="message" class="form-label">Project Description / Challenge Details <span class="text-required">*</span></label>
+                    <textarea id="message" name="message" rows="5" 
+                              class="form-textarea {% if errors.get('message') %}input-error{% endif %}" 
+                              placeholder="Describe your technical challenges, operational bottlenecks, timeline expectations, or system goals..." required aria-required="true">{{ form_data.get('message', '') }}</textarea>
+                    {% if errors.get('message') %}
+                    <span class="field-error-msg" role="alert">{{ errors.get('message') }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-hero-primary w-full text-center block" id="btn-submit-contact">
+                        <span>Submit Architectural Inquiry</span> &rarr;
+                    </button>
+                </div>
+
+                <div class="form-reassurance mt-4 text-center">
+                    <span class="text-xs color-muted">
+                        Confidential submission. Typical target response within 1 business day. Non-binding initial advisory.
+                    </span>
+                </div>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

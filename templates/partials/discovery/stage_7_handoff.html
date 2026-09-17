@@ -1,0 +1,75 @@
+<div class="discovery-surface" id="stage-7-surface" style="text-align: center; max-width: 760px; margin: 0 auto;">
+    <!-- Out-of-band stepper update -->
+    {% if not is_full_page %}
+    {% set is_oob = true %}
+    {% set current_step = 7 %}
+    {% set step_percentage = "100%" %}
+    {% set step_title = "Architect Review Queued" %}
+    {% include "partials/discovery/stepper.html" %}
+    {% endif %}
+
+    <!-- Minimal Success Icon -->
+    <div class="success-icon-ring" role="img" aria-label="Success checkmark">
+        ✓
+    </div>
+
+    <!-- Eyebrow & Dominant Heading -->
+    <span class="discovery-eyebrow">Consultation Handoff</span>
+    <h1 class="discovery-hero-heading" style="font-size: clamp(1.6rem, 3vw, 2.1rem); margin-bottom: var(--space-2);">
+        Dossier Submitted to Senior Architect Queue
+    </h1>
+    <p class="discovery-hero-sub" style="margin: 0 auto var(--space-6) auto; max-width: 580px;">
+        Your project statement, Opportunity Map, and 18-section Solution Blueprint have been securely queued for review by a Principal Technology Architect.
+    </p>
+
+    <!-- Flat Key Status Card -->
+    <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--radius-md); padding: var(--space-4); max-width: 580px; margin: 0 auto var(--space-6) auto; text-align: left;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3); font-size: 0.85rem;">
+            <span style="color: #94a3b8;">Queue Status:</span>
+            <span class="badge-status-ok">PENDING ARCHITECT REVIEW</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3); font-size: 0.85rem;">
+            <span style="color: #94a3b8;">Expected Response Time:</span>
+            <span style="color: #f1f5f9; font-weight: 600;">Within 1 Business Day (BD-013)</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;">
+            <span style="color: #94a3b8;">Review Request ID:</span>
+            <span style="font-family: var(--font-mono); color: #818cf8; font-weight: 600;">{{ review_request_id }}</span>
+        </div>
+    </div>
+
+    <!-- Permanent Recovery Link Box -->
+    <div style="max-width: 580px; margin: 0 auto; text-align: left;">
+        <label for="recovery-link" class="input-label" style="display: block; margin-bottom: var(--space-2);">
+            Permanent Diagnostic Recovery Link:
+        </label>
+        <div class="recovery-link-container" x-data="{ copied: false }">
+            <input type="text" 
+                   id="recovery-link" 
+                   class="recovery-link-input" 
+                   readonly 
+                   value="{{ recovery_url }}">
+            <button type="button" 
+                    class="btn btn-secondary" 
+                    style="padding: 6px 14px; font-size: 0.8rem; min-height: 38px;"
+                    @click="navigator.clipboard.writeText('{{ recovery_url }}'); copied = true; setTimeout(() => copied = false, 2500)">
+                <span x-text="copied ? 'Copied!' : 'Copy Link'">Copy Link</span>
+            </button>
+        </div>
+        <p style="font-size: 0.8rem; color: #64748b; margin-top: 6px;">
+            Bookmark or save this URL to revisit your unlocked Solution Blueprint and indicative estimates at any time.
+        </p>
+    </div>
+
+    <div class="btn-row" style="justify-content: center; margin-top: var(--space-8);">
+        <a href="/" class="btn btn-ghost">&larr; Return to Studio Home</a>
+        <button type="button" 
+                class="btn btn-primary"
+                hx-post="/discovery/start"
+                hx-target="#discovery-viewport"
+                hx-swap="innerHTML transition:true">
+            <span>Start Another Discovery Session</span>
+            <span class="cta-arrow" aria-hidden="true">&rarr;</span>
+        </button>
+    </div>
+</div>
