@@ -110,7 +110,7 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_production_settings(self) -> "Settings":
-        """Enforces strict security constraints when running in production environment."""
+        """Enforces strict security constraints when running in production or staging environment."""
         if self.app_env == "production":
             if self.debug:
                 raise ValueError("DEBUG mode must be strictly False in production.")
@@ -128,6 +128,16 @@ class Settings(BaseSettings):
             if "SQLEXPRESS" in db_val:
                 raise ValueError(
                     "DATABASE_URL must be configured for production SQL Server (not local SQLEXPRESS)."
+                )
+
+        elif self.app_env == "staging":
+            if self.debug:
+                raise ValueError("DEBUG mode must be strictly False in staging.")
+
+            secret_val = self.secret_key.get_secret_value()
+            if "dev-insecure" in secret_val or "change-this-in-production" in secret_val:
+                raise ValueError(
+                    "SECRET_KEY must be a secure random string (not development default) in staging."
                 )
 
         return self

@@ -1,0 +1,46 @@
+# =============================================================================
+# systemd Unit: Studio Website Staging ASGI Service
+# Conforms to DOC-REP-6.2.5-PLAN Section 4 & Section 6.
+# NOTE: PROPOSED STAGING VALIDATION TOPOLOGY — NOT OWNER APPROVED HOSTING PLATFORM
+# =============================================================================
+
+[Unit]
+Description=AI-Native Technology Studio Website (Staging Validation)
+After=network.target mssql-server.service
+Wants=network.target
+
+[Service]
+Type=simple
+User=studio-app
+Group=studio-app
+WorkingDirectory=/opt/studio-website
+
+# Load staging environment variables
+EnvironmentFile=/etc/studio-website/staging.env
+
+# Multi-worker process model (Illustrative 2 workers for concurrency validation)
+# Staging validates multi-worker behavior; final production worker count requires empirical testing & owner decision.
+ExecStart=/opt/studio-website/.venv/bin/uvicorn app.main:app \
+    --host 127.0.0.1 \
+    --port 8000 \
+    --workers 2 \
+    --log-config /opt/studio-website/deploy/uvicorn_logging.json
+
+# Process lifecycle and restart policy
+Restart=always
+RestartSec=5s
+KillSignal=SIGTERM
+TimeoutStopSec=30s
+
+# Security sandboxing
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+# Standard streams redirected to systemd journal
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

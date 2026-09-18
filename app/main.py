@@ -185,8 +185,10 @@ def create_app(settings: Optional[Settings] = None) -> FastAPI:
             "frame-ancestors 'none'; "
             "form-action 'self';"
         )
-        if cfg.app_env == "production" or request.url.scheme == "https":
+        if cfg.app_env in ("production", "staging") or request.url.scheme == "https":
             response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        if cfg.app_env == "staging":
+            response.headers["X-Robots-Tag"] = "noindex, nofollow, noarchive"
         return response
 
     # -------------------------------------------------------------------------

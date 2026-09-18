@@ -13,6 +13,7 @@ from fastapi import APIRouter, HTTPException, Request, Response, status
 from fastapi.responses import HTMLResponse, PlainTextResponse
 
 from fastapi.templating import Jinja2Templates
+from app.config import get_settings
 from app.shared.logging import get_logger
 from app.shared.security import scrub_pii
 from app.shared.telemetry import emit_telemetry_event
@@ -366,6 +367,9 @@ async def solutions_view(request: Request) -> HTMLResponse:
 @router.get("/robots.txt", response_class=PlainTextResponse, summary="Search Engine Directives")
 async def robots_txt_view(request: Request) -> PlainTextResponse:
     """Returns minimal plain-text search crawler directives."""
+    settings = get_settings()
+    if settings.app_env == "staging":
+        return PlainTextResponse(content="User-agent: *\nDisallow: /\n")
     base_url = str(request.base_url).rstrip("/")
     content = f"User-agent: *\nAllow: /\nSitemap: {base_url}/sitemap.xml\n"
     return PlainTextResponse(content=content)
