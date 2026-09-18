@@ -41,12 +41,21 @@ RATE_LIMITED_POST_ROUTES: Dict[str, tuple[int, int]] = {
 _rate_limit_store: Dict[str, Dict[str, List[float]]] = defaultdict(lambda: defaultdict(list))
 
 
-def _get_client_ip(request: Request) -> str:
-    """Extracts client IP address handling X-Forwarded-For safely."""
-    x_forwarded_for = request.headers.get("X-Forwarded-For")
-    if x_forwarded_for:
-        return x_forwarded_for.split(",")[0].strip()
-    return request.client.host if request.client else "127.0.0.1"
+def _get_client_ip(request: Request, trusted_proxies: Optional[List[str]] = None) -> str:
+    """
+    Extracts client IP address safely considering trusted reverse proxies.
+    If the direct peer (request.client.host) is in trusted_proxies, the leftmost
+    IP in X-Forwarded-For is extracted. Otherwise, the direct peer IP is returned,
+    preventing arbitrary client IP spoofing by untrusted callers.
+    """
+    direct_peer = request.client.host if request.client else "127.0.0.1"
+    proxies = trusted_proxies if trusted_proxies is not None else get_settings().trusted_proxies
+
+    if direct_peer in proxies or "*" in proxies:
+        x_forwarded_for = request.headers.get("X-Forwarded-For")
+        if x_forwarded_for:
+            return x_forwarded_for.split(",")[0].strip()
+    return direct_peer
 
 
 def check_in_memory_rate_limit(client_ip: str, path: str) -> bool:
@@ -115,12 +124,25 @@ def create_app(settings: Optional[Settings] = None) -> FastAPI:
     # -------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------
-    # Middleware: Native In-Memory Rate Limiting (Phase 6.1 / 6.2.3)
+    # Middleware: Native In-Memory Rate Limiting & Payload Defense (Phase 6.1 / 6.2.3 / 6.2.4)
     # -------------------------------------------------------------------------
     @application.middleware("http")
     async def rate_limit_middleware(request: Request, call_next):
         if request.method == "POST" and request.url.path in RATE_LIMITED_POST_ROUTES:
-            client_ip = _get_client_ip(request)
+            content_length = request.headers.get("content-length")
+            if content_length:
+                try:
+                    if int(content_length) > 1_048_576:  # 1 MB boundary defense
+                        return format_error_response(
+                            code="PAYLOAD_TOO_LARGE",
+                            message="Request payload exceeds maximum allowed size (1MB).",
+                            request_id=correlation_id_ctx.get(),
+                            status_code=status.HTTP_413_CONTENT_TOO_LARGE,
+                        )
+                except ValueError:
+                    pass
+
+            client_ip = _get_client_ip(request, cfg.trusted_proxies)
             if not check_in_memory_rate_limit(client_ip, request.url.path):
                 from app.shared.security import hash_ip
                 ip_hash = hash_ip(client_ip)

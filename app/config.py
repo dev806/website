@@ -4,8 +4,8 @@ Validates and exposes typed environment settings using Pydantic v2 Settings.
 """
 
 from functools import lru_cache
-from typing import Literal
-from pydantic import Field, SecretStr
+from typing import Any, Literal
+from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 DEFAULT_DEV_DATABASE_URL = (
@@ -73,6 +73,12 @@ class Settings(BaseSettings):
     session_max_age_seconds: int = Field(default=2592000, description="Session TTL (default 30 days)")
     session_secure_cookie: bool = Field(default=False, description="Requires HTTPS cookie flag in production")
 
+    # Reverse Proxy & Networking Security
+    trusted_proxies: list[str] = Field(
+        default_factory=lambda: ["127.0.0.1", "::1", "testclient"],
+        description="List of trusted reverse proxy IP addresses",
+    )
+
     # Notifications & Alerts
     smtp_enabled: bool = Field(default=False, description="Outbound SMTP dispatcher toggle")
     architect_alert_email: str = Field(
@@ -84,6 +90,47 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",
     )
+
+    @field_validator("trusted_proxies", mode="before")
+    @classmethod
+    def parse_trusted_proxies(cls, v: Any) -> list[str]:
+        """Parses comma-separated strings or JSON arrays into a list of proxy IPs."""
+        if isinstance(v, str):
+            v = v.strip()
+            if v.startswith("[") and v.endswith("]"):
+                import json
+                try:
+                    parsed = json.loads(v)
+                    if isinstance(parsed, list):
+                        return [str(item).strip() for item in parsed if str(item).strip()]
+                except (json.JSONDecodeError, TypeError, ValueError):
+                    return [item.strip() for item in v.strip("[]").split(",") if item.strip()]
+            return [item.strip() for item in v.split(",") if item.strip()]
+        return v
+
+    @model_validator(mode="after")
+    def validate_production_settings(self) -> "Settings":
+        """Enforces strict security constraints when running in production environment."""
+        if self.app_env == "production":
+            if self.debug:
+                raise ValueError("DEBUG mode must be strictly False in production.")
+
+            secret_val = self.secret_key.get_secret_value()
+            if "dev-insecure" in secret_val or "change-this-in-production" in secret_val:
+                raise ValueError(
+                    "SECRET_KEY must be a production-grade random string (not development default)."
+                )
+
+            if not self.session_secure_cookie:
+                raise ValueError("SESSION_SECURE_COOKIE must be True in production.")
+
+            db_val = self.database_url.get_secret_value()
+            if "SQLEXPRESS" in db_val:
+                raise ValueError(
+                    "DATABASE_URL must be configured for production SQL Server (not local SQLEXPRESS)."
+                )
+
+        return self
 
     def get_database_url_str(self) -> str:
         """Returns the unmasked database connection string for SQLAlchemy engine initialization."""
@@ -98,3 +145,4 @@ class Settings(BaseSettings):
 def get_settings() -> Settings:
     """Returns the cached application settings instance."""
     return Settings()
+

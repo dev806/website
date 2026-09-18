@@ -55,12 +55,14 @@ EMAIL_REGEX = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 def _attach_session_cookie(response: Response, signed_cookie: str, secure: bool = False) -> None:
     """Sets standard HTTP-only session cookie."""
+    settings = get_settings()
+    is_secure = secure or settings.session_secure_cookie or (settings.app_env == "production")
     response.set_cookie(
         key=SESSION_COOKIE_NAME,
         value=signed_cookie,
         httponly=True,
         samesite="lax",
-        secure=secure,
+        secure=is_secure,
         max_age=30 * 86400,
     )
 

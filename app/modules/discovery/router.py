@@ -75,12 +75,13 @@ def start_discovery_session(
         value=signed_cookie,
         httponly=True,
         samesite="lax",
-        secure=settings.session_secure_cookie,
+        secure=settings.session_secure_cookie or (settings.app_env == "production"),
         max_age=30 * 86400,
     )
-    # Also expose token in response headers for automated testing / non-browser clients
-    response.headers["X-Session-ID"] = str(session.id)
-    response.headers["X-Session-Token"] = raw_token
+    # Expose token in response headers ONLY for automated testing / non-production clients
+    if settings.app_env != "production":
+        response.headers["X-Session-ID"] = str(session.id)
+        response.headers["X-Session-Token"] = raw_token
 
     return StartSessionResponse(
         success=True,
