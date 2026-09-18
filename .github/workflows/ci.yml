@@ -107,7 +107,7 @@ jobs:
           echo "Running migrations on StudioWebsiteDev..."
           DATABASE_URL="mssql+pyodbc://sa:YourStrong!Password123@127.0.0.1:1433/StudioWebsiteDev?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes" alembic upgrade head
 
-      - name: Execute Main Application Test Suite (85 Tests)
+      - name: Execute Main Application Test Suite
         env:
           PYTHONPATH: .
           APP_ENV: testing

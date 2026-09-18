@@ -28,6 +28,48 @@ from scripts.inspect_telemetry import parse_telemetry_lines, print_summary
 client = TestClient(app)
 
 
+@pytest.fixture(autouse=True)
+def isolate_observability_logging():
+    """
+    Snapshots and restores logger state for test isolation.
+    Captures level, disabled, propagate, and handlers before each test.
+    Applies only the minimum temporary state required for observability/caplog assertions,
+    and restores the exact original state during teardown to avoid global pollution.
+    """
+    monitored_loggers = [
+        "",
+        "app",
+        "app.telemetry",
+        "app.main",
+        "app.database.connection",
+        "app.ai_gateway",
+        "app.modules.discovery.service",
+        "app.routers.web",
+    ]
+    snapshots = {}
+    for name in monitored_loggers:
+        log = logging.getLogger(name)
+        snapshots[name] = {
+            "level": log.level,
+            "disabled": log.disabled,
+            "propagate": log.propagate,
+            "handlers": list(log.handlers),
+        }
+        # Configure temporary state required for observability assertions
+        log.disabled = False
+        log.setLevel(logging.DEBUG)
+
+    yield
+
+    # Restore exact original logger state
+    for name, state in snapshots.items():
+        log = logging.getLogger(name)
+        log.setLevel(state["level"])
+        log.disabled = state["disabled"]
+        log.propagate = state["propagate"]
+        log.handlers = state["handlers"]
+
+
 # -----------------------------------------------------------------------------
 # 1. Logging & Formatter Tests
 # -----------------------------------------------------------------------------
