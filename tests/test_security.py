@@ -24,7 +24,10 @@ def test_security_headers_present():
     assert headers.get("X-Content-Type-Options") == "nosniff"
     assert "strict-origin-when-cross-origin" in headers.get("Referrer-Policy", "")
     assert "geolocation=()" in headers.get("Permissions-Policy", "")
-    assert "default-src 'self'" in headers.get("Content-Security-Policy", "")
+    csp = headers.get("Content-Security-Policy", "")
+    assert "default-src 'self'" in csp
+    assert "'unsafe-eval'" in csp
+    assert "'unsafe-inline'" in csp
 
 
 def test_rate_limiting_exceeded_returns_429():

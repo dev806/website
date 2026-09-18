@@ -41,20 +41,20 @@
     
     {% block head %}{% endblock %}
 </head>
-<body class="studio-body" x-data="{ mobileOpen: false, dropdownOpen: false }" @keydown.escape="dropdownOpen = false; mobileOpen = false">
+<body class="studio-body" x-data="{ mobileOpen: false, dropdownOpen: false }" @keydown.escape="dropdownOpen = false; mobileOpen = false" @resize.window="if (window.innerWidth > 900) mobileOpen = false">
     <!-- Accessibility: Skip to Main Content (WCAG 2.1 AA) -->
     <a href="#main-content" class="skip-link">Skip to Main Content</a>
 
     <header class="studio-header" role="banner">
         <nav class="nav-container" role="navigation" aria-label="Primary Navigation">
-            <a href="/" class="brand-logo" aria-label="[STUDIO_NAME] Home">
+            <a href="/" class="brand-logo" aria-label="[STUDIO_NAME] Home" @click="dropdownOpen = false; mobileOpen = false">
                 <span class="brand-dot" aria-hidden="true"></span>
                 [STUDIO_NAME]
             </a>
             
             <div class="nav-desktop-links">
                 <!-- Dropdown Menu for Capability Pillars -->
-                <div class="nav-dropdown" @mouseleave="dropdownOpen = false" @focusout="if (!$el.contains($event.relatedTarget)) dropdownOpen = false">
+                <div class="nav-dropdown" @mouseleave="dropdownOpen = false" @focusout="if (!$el.contains($event.relatedTarget)) dropdownOpen = false" @click.outside="dropdownOpen = false">
                     <button type="button" class="nav-link nav-dropdown-trigger" 
                             @click="dropdownOpen = !dropdownOpen" 
                             :aria-expanded="dropdownOpen"
@@ -98,13 +98,13 @@
                     </div>
                 </div>
 
-                <a href="/how-we-work" class="nav-link">How We Work</a>
-                <a href="/about" class="nav-link">About</a>
-                <a href="/contact" class="nav-link">Contact</a>
+                <a href="/how-we-work" class="nav-link" @click="dropdownOpen = false">How We Work</a>
+                <a href="/about" class="nav-link" @click="dropdownOpen = false">About</a>
+                <a href="/contact" class="nav-link" @click="dropdownOpen = false">Contact</a>
             </div>
 
             <div class="nav-actions">
-                <a href="/discovery" class="btn-nav-cta" id="nav-cta-discovery">
+                <a href="/discovery" class="btn-nav-cta" id="nav-cta-discovery" @click="dropdownOpen = false">
                     <span>Start With Your Problem</span>
                     <span aria-hidden="true">&rarr;</span>
                 </a>

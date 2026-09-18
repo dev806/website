@@ -2575,6 +2575,13 @@ body.studio-body {
     font-weight: 500;
 }
 
+/* Desktop Navigation Rules */
+@media (min-width: 901px) {
+    .mobile-drawer {
+        display: none !important;
+    }
+}
+
 /* Responsive Media Queries */
 @media (max-width: 900px) {
     .nav-desktop-links {

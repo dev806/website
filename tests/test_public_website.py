@@ -184,3 +184,32 @@ def test_accessibility_landmarks():
     assert 'role="main"' in html
     assert 'role="contentinfo"' in html or '<footer' in html
     assert 'class="skip-link"' in html
+
+
+def test_navigation_mega_menu_markup_and_css_guards():
+    """Verifies that navigation markup, Alpine reactivity handlers, and CSS guards prevent stuck mega-menus."""
+    response = client.get("/")
+    assert response.status_code == 200
+    html = response.text
+
+    # Verify Alpine component data and escape handler on body
+    assert 'x-data="{ mobileOpen: false, dropdownOpen: false }"' in html
+    assert '@keydown.escape="dropdownOpen = false; mobileOpen = false"' in html
+
+    # Verify desktop dropdown has click.outside dismissal and click handlers on sibling links
+    assert '@click.outside="dropdownOpen = false"' in html
+    assert 'href="/how-we-work" class="nav-link" @click="dropdownOpen = false"' in html
+    assert 'href="/about" class="nav-link" @click="dropdownOpen = false"' in html
+    assert 'href="/contact" class="nav-link" @click="dropdownOpen = false"' in html
+
+    # Verify mobile drawer links dismiss mobile drawer
+    assert 'class="mobile-drawer"' in html
+    assert 'x-show="mobileOpen"' in html
+    assert '@click="mobileOpen = false"' in html
+
+    # Verify CSS contains desktop exclusion guard for mobile-drawer
+    css_res = client.get("/static/css/main.css")
+    assert css_res.status_code == 200
+    assert "@media (min-width: 901px)" in css_res.text
+    assert ".mobile-drawer" in css_res.text
+    assert "display: none !important" in css_res.text
